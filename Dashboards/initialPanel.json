@@ -17,7 +17,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1598547581858,
+  "iteration": 1598547581878,
   "links": [],
   "panels": [
     {
@@ -131,7 +131,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"temperature_C\")  *1.8+32 FROM \"${weatherStation}\" ",
+          "query": "SELECT last(\"temperature_C\")  *1.8+32 FROM \"${tempSensor}\" ",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -247,7 +247,7 @@
           "measurement": "EcoWitt-WH40",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT cumulative_sum(difference(last(\"rain_mm\")))*0.03937 FROM \"${weatherStation}\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
+          "query": "SELECT cumulative_sum(difference(last(\"rain_mm\")))*0.03937 FROM \"${rainSensor}\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -447,7 +447,7 @@
           "measurement": "Acurite-5n1",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"wind_dir_deg\" FROM \"${weatherStation}\" WHERE $timeFilter",
+          "query": "SELECT \"wind_dir_deg\" FROM \"${windSensor}\" WHERE $timeFilter",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -555,7 +555,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT (last(\"temperature_C\") - ((100-last(\"humidity\")) /5) ) *1.8+32 FROM \"Acurite-5n1\" ",
+          "query": "SELECT (last(\"temperature_C\") - ((100-last(\"humidity\")) /5) ) *1.8+32 FROM \"${tempSensor}\" ",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -634,7 +634,7 @@
           "measurement": "Acurite-5n1",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"wind_avg_km_h\" *0.6213712FROM \"${weatherStation}\" WHERE $timeFilter",
+          "query": "SELECT \"wind_avg_km_h\" *0.6213712FROM \"${windSensor}\" WHERE $timeFilter",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -979,7 +979,7 @@
           "measurement": "LaCrosse-TX141THBv2",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"temperature_C\")  *1.8+32 FROM \"${weatherStation}\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
+          "query": "SELECT last(\"temperature_C\")  *1.8+32 FROM \"${tempSensor}\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1024,8 +1024,8 @@
           "measurement": "LaCrosse-TX141THBv2",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT (last(\"temperature_C\") - ((100 - last(\"humidity\"))/5)) *1.8+32   FROM \"LaCrosse-TX141THBv2\"\n",
-          "rawQuery": false,
+          "query": "SELECT last(\"humidity\") FROM \"${tempSensor}\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
+          "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
           "select": [
@@ -1062,7 +1062,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT (mean(\"temperature_C\") - ((100-mean(\"humidity\")) /5) ) *1.8+32 FROM \"LaCrosse-TX141THBv2\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
+          "query": "SELECT (mean(\"temperature_C\") - ((100-mean(\"humidity\")) /5) ) *1.8+32 FROM \"${tempSensor}\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
           "rawQuery": true,
           "refId": "C",
           "resultFormat": "time_series",
@@ -1190,7 +1190,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT cumulative_sum(difference(last(\"rain_mm\")))*0.03937 FROM \"${weatherStation}\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
+          "query": "SELECT cumulative_sum(difference(last(\"rain_mm\")))*0.03937 FROM \"${rainSensor}\" WHERE $timeFilter GROUP BY time($__interval) fill(none)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1320,7 +1320,7 @@
           "measurement": "${weatherStation}",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"wind_avg_km_h\") * 0.6213712 FROM \"${weatherStation}\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT last(\"wind_avg_km_h\") * 0.6213712 FROM \"${windSensor}\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1498,7 +1498,7 @@
           "measurement": "Acurite-6045M",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"storm_dist\") * 0.6213712 FROM \"Acurite-6045M\" WHERE $timeFilter GROUP BY time($__interval) fill(previous)",
+          "query": "SELECT last(\"storm_dist\") * 0.6213712 FROM \"${lightningSensor}\" WHERE $timeFilter GROUP BY time($__interval) fill(previous)",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -2797,7 +2797,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "Acurite-5n1",
           "value": "Acurite-5n1"
         },
@@ -2805,9 +2805,9 @@
         "definition": "show measurements",
         "hide": 0,
         "includeAll": false,
-        "label": "Station",
+        "label": "Temp Sensor",
         "multi": false,
-        "name": "weatherStation",
+        "name": "tempSensor",
         "options": [],
         "query": "show measurements",
         "refresh": 1,
@@ -2823,7 +2823,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "Acurite-6045M",
           "value": "Acurite-6045M"
         },
@@ -2843,11 +2843,63 @@
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "Acurite-5n1",
+          "value": "Acurite-5n1"
+        },
+        "datasource": "InfluxDB",
+        "definition": "show measurements",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Wind Sensor",
+        "multi": false,
+        "name": "windSensor",
+        "options": [],
+        "query": "show measurements",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 5,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "EcoWitt-WH40",
+          "value": "EcoWitt-WH40"
+        },
+        "datasource": "InfluxDB",
+        "definition": "show measurements",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Rain Sensor",
+        "multi": false,
+        "name": "rainSensor",
+        "options": [],
+        "query": "show measurements",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 5,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -2870,5 +2922,5 @@
   "timezone": "",
   "title": "Tatooine Weather",
   "uid": "engopCSMk",
-  "version": 166
+  "version": 169
 }
