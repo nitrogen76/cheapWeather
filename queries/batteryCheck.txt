@@ -1,0 +1,8 @@
+## this query checks battery status, and assumes that "1" means the battery is OK
+## and any other entry is NOT.
+
+SELECT last("battery_ok") FROM "${MEASUREMENT}" WHERE $timeFilter GROUP BY time($__interval) fill(null)
+
+Now set up an alert with the following:
+
+WHEN last() of query (A, 5m, now) IS OUTSIDE RANGE 1.5 to 0.5
