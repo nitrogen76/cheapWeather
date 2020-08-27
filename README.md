@@ -1,2 +1,150 @@
 # cheapWeather
 Weather monitoring using Grafana, influxDB and rtl_433
+
+I'm a cheapskate.  I Did not want to buy a weather station with full data export to Weather Underground.
+
+In fact, I started this project because I didn't want to buy one at ALL.  My neighbor had one, and I just wanted to 
+read the signals from his.  Unfortunately, I learned his station was placed on his roof, which raised the ambient 
+temps he recorded by 10º-15º.  So I rummaged around and found an old wireless temperature probe...
+
+To make a long story short, I bought a used Acurite 5in1 from Ebay for $30 because it didn't have the panel for it.
+
+I didn't need it.
+
+The beauty of this is, you can record as little or as much information this way as you want.
+
+Just want to graph temperature and humidity?  Grab a LaCrosse sensor and go to town.
+
+Want an ENTIRE weather station?  Grab an Accurate 5in1, and skip the expensive panel.
+
+
+So, what do you need?
+
+* A linux distribution.  (I will be using Fedora: https://getfedora.org/ )
+* A RTL-SDR dongle. https://www.rtl-sdr.com
+* rtl-433. https://github.com/merbanan/rtl_433
+* influxdb  (Assuming influx 1.8, but 2.0 is possible with substitutions)
+* Grafana (7.1 as of this writing, but any version will work)
+* A bit of linux knowledge.
+
+
+How does all this work, exactly?
+
+To be as simple as possible:
+
+Linux -> rtl_433 -> influxdb -> grafana
+
+First thing you need to do is start up a modern linux distribution.
+These instructions will be fedora 31 focused, as thats what I use, but should work on any modern Linux distro.
+
+
+These instructions assume a passing familiarity with Linix, so after you get your favorite distro running,
+You first need to download the rtl_433 software.
+
+Instructions for doing so can be found here: https://github.com/merbanan/rtl_433/blob/master/docs/BUILDING.md
+
+
+You can do it the easy way if you do not need bleeding edge support:
+
+$ sudo dnf copr enable tvass/rtl_433
+$ sudo dnf install rtl_433
+
+Also, while we're at it, let's get influxDB installed, as well:
+
+$ sudo dnf install influxdb
+$ sudo 
+
+
+Now lets start influxdb, make sure it starts on boot, and set up some users and basic auth.
+
+$ sudo systemctl start influxdb
+$ sudo systemctl enable influxdb
+
+
+Let's create some users and a db now.
+Start up the influx client:
+
+$ influx
+
+Run the following queries to create users.  Please change the users and passwords to be meaningful.
+
+CREATE USER admin WITH PASSWORD 'goodadminpasswd' WITH ALL PRIVILEGES
+CREATE USER weather WITH PASSWORD 'goodweatherpassword'
+
+CREATE DATABASE weather
+GRANT ALL on "weather" to "weather"
+
+
+Now, using your favorite text editor, edit the influxdb conf file to enable auth:
+
+$ vi /etc/influxdb/influxdb.conf
+
+Add this section to the [httpd] section.
+
+  auth-enabled = true # 
+
+Now, restart influxDB:
+
+$ sudo systemctl restart influxdb
+
+---
+
+Next step: rtl_433 software.
+
+You'll have to add your local linux user to the rtlsdr group to be able to reload its driver.
+
+Plug in your RTL-SDR dongle to a USB port on your computer, and hook up a good antenna.
+The antenna you need is dependent on the frequency your equipment operates.  Most operates on 433 MHz, 915MHz, others.
+
+Start the scanning process manually to see if you see your equipment.
+
+$ rtl_433 
+
+If it's running on a frequency other than 433MHz, then:
+
+$ rtl_433 -f 195M
+
+Or what ever frequency you want to scan.
+
+Wait a while.  Hopefully you'll see output with your weather station, and a decode of it's last transmission.
+If you see it, go to the next step.  If not:
+
+* Check to make sure you have the correct frequency. (915M vs 915 for instance)
+* check to insure you have a good antenna.
+
+
+Now, let's manually run the program, connecting to influxDB:
+
+rtl_433 -M protocol -M level -C si -F "influx://your.influxDB.host:8086/write?db=weather&p=goodweatherpasswd&u=weather"
+
+Wait a while, like 10 minutes.
+
+Now let's check influx to see if that data is in there:
+
+$ influx
+> auth
+username: weather
+password: <type your password here>
+> use weather
+Using database weather
+
+> show measurements
+
+You should get SOME output, preferable with the name of the device you want.
+
+
+Now for the fun part.  Grafana installs should be easy.  You can run an older version directly from your Fedora distros, or go relatively new with these instructions:
+
+https://computingforgeeks.com/how-to-install-grafana-on-fedora/
+
+
+Important info you'll need to set up your datasource:
+
+URL: (that is basically: influx://your.influxDB.host:8086
+Access type: Server
+
+Database, user and password.
+HTTP Method: POST
+
+I will post separate info with queries and designs I use for my dashboard.
+
