@@ -45,48 +45,48 @@ Instructions for doing so can be found here: https://github.com/merbanan/rtl_433
 
 
 You can do it the easy way if you do not need bleeding edge support:
-
+```
 $ sudo dnf copr enable tvass/rtl_433
 $ sudo dnf install rtl_433
-
+```
 Also, while we're at it, let's get influxDB installed, as well:
-
+```
 $ sudo dnf install influxdb
 $ sudo 
-
+```
 
 Now lets start influxdb, make sure it starts on boot, and set up some users and basic auth.
-
+```
 $ sudo systemctl start influxdb
 $ sudo systemctl enable influxdb
-
+```
 
 Let's create some users and a db now.
 Start up the influx client:
-
+```
 $ influx
-
+```
 Run the following queries to create users.  Please change the users and passwords to be meaningful.
-
+```
 CREATE USER admin WITH PASSWORD 'goodadminpasswd' WITH ALL PRIVILEGES
 CREATE USER weather WITH PASSWORD 'goodweatherpassword'
 
 CREATE DATABASE weather
 GRANT ALL on "weather" to "weather"
-
+```
 
 Now, using your favorite text editor, edit the influxdb conf file to enable auth:
-
+```
 $ vi /etc/influxdb/influxdb.conf
-
+```
 Add this section to the [httpd] section.
-
+```
   auth-enabled = true # 
-
+```
 Now, restart influxDB:
-
+```
 $ sudo systemctl restart influxdb
-
+```
 ---
 
 Next step: rtl_433 software.
@@ -97,13 +97,13 @@ Plug in your RTL-SDR dongle to a USB port on your computer, and hook up a good a
 The antenna you need is dependent on the frequency your equipment operates.  Most operates on 433 MHz, 915MHz, others.
 
 Start the scanning process manually to see if you see your equipment.
-
+```
 $ rtl_433 
-
+```
 If it's running on a frequency other than 433MHz, then:
-
+```
 $ rtl_433 -f 195M
-
+```
 Or what ever frequency you want to scan.
 
 Wait a while.  Hopefully you'll see output with your weather station, and a decode of it's last transmission.
@@ -114,13 +114,13 @@ If you see it, go to the next step.  If not:
 
 
 Now, let's manually run the program, connecting to influxDB:
-
+```
 rtl_433 -M protocol -M level -C si -F "influx://your.influxDB.host:8086/write?db=weather&p=goodweatherpasswd&u=weather"
-
+```
 Wait a while, like 10 minutes.
 
 Now let's check influx to see if that data is in there:
-
+```
 $ influx
 > auth
 username: weather
@@ -129,7 +129,7 @@ password: <type your password here>
 Using database weather
 
 > show measurements
-
+```
 You should get SOME output, preferable with the name of the device you want.
 
 
