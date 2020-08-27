@@ -1,0 +1,5 @@
+## Simple query to show total rainfall during the selected timerange:
+
+SELECT cumulative_sum(difference(last("rain_mm")))*0.03937 FROM "${MEASUREMENT}" WHERE $timeFilter GROUP BY time($__interval) fill(none)
+
+Note this query assumes rainfall in mm, and converts to Dumb American Units.
