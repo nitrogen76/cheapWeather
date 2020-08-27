@@ -1,0 +1,5 @@
+## SImple windpseed query.
+##Notice it assumes the reported speed is in kph and converts it to Stupid American Units.
+
+SELECT last("wind_avg_km_h") * 0.6213712 FROM "${MEASUREMENT}" WHERE $timeFilter GROUP BY time($__interval) fill(null)
+

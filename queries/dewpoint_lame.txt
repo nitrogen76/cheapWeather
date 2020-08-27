@@ -1,0 +1,6 @@
+## Lame dewpoint calculation using easy math.  Will eventually write a query to 
+## do the dewpoint math properly if you have a barometer.  Which I don't.  Yet.
+## Note this query assumes temperature in SI units, and converts it to
+## Stupid American Units.
+
+SELECT (last("temperature_C") - ((100-last("humidity")) /5) ) *1.8+32 FROM "${MEASUREMENT}" 
