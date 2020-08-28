@@ -8,7 +8,7 @@ INFLUX_UID=
 INFLUX_PWD=
 INFLUX_DB=
 
------ Cut here ----
+######## CUT HERE ########
 tempF=0
 winddir=0
 windspeed=0
