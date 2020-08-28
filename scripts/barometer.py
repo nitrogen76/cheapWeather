@@ -10,8 +10,12 @@
 ## it's primitive as hell on a raspbery pi.  Hopefully there's a better method for this."
 ##
 
-pressure_RAW=("/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-005c/iio:device2/in_pressure_raw")
-pressure_scale=("/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-005c/iio:device2/in_pressure_scale")
+import configparser
+config = configparser.ConfigParser()
+config.read('barometer.ini')
+
+pressure_RAW=config.get('Main','pressure_RAW')
+pressure_scale=config.get('Main','pressure_scale')
 
 a= open(pressure_RAW)
 b= open(pressure_scale)
