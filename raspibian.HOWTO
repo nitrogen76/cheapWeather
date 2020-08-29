@@ -1,0 +1,21 @@
+How to turn a raspberry pi into your little weather server.
+I run the rtl_433 on it, as well as use my raspberry pi's sense hat for internal temperature monitoring.
+
+First, get the latest version of raspibian, and install it on your pi.
+Second, either use the "pi" account, or create your own.  if you create your own, insure the user is at LEAST a member of the plugdev group.
+
+Once you get the raspberry pi set up on your network (outside the scope of this document) you'll need to do the following to get it ready:
+
+First, install packages:
+apt-get install influxdb-client rtl-sdr git libtool libusb-1.0-0-dev librtlsdr-dev rtl-sdr build-essential autoconf cmake pkg-config 
+
+if you have a sense-hat:
+apt-get install sense-hat
+
+git clone https://github.com/merbanan/rtl_433
+(Follow instructions in https://github.com/merbanan/rtl_433/blob/master/docs/BUILDING.md )
+
+git clone https://github.com/osmocom/rtl-sdr.git  (for one file.  rtl-sdr.rules.  Place it in your /etc/udev/rules.d folder)
+
+
+
