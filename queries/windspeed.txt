@@ -3,3 +3,7 @@
 
 SELECT last("wind_avg_km_h") * 0.6213712 FROM "${MEASUREMENT}" WHERE $timeFilter GROUP BY time($__interval) fill(null)
 
+
+To get a good median wind direction for the last 5 minutes
+
+SELECT median("wind_dir_deg") FROM "${windSensor}" WHERE time < now() + 120s
