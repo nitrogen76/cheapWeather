@@ -1,35 +1,43 @@
-#!/usr/bin/python
-##
-## Requires sensehat support, which is primitive in fedora.
-## This would work better on raspibian, but hacks are hacks
-##
+#!/usr/bin/python3
 
-
-## Files to read barometer info for.  Currently using a 
-## raspberry PI sense hat to get internal temp, humidity, and pressure readings.
-## it's primitive as hell on a raspbery pi.  Hopefully there's a better method for this."
-##
-
+from sense_hat import SenseHat
+import math
+import time
 import configparser
+from influxdb import InfluxDBClient
+
+
 config = configparser.ConfigParser()
-config.read('barometer.ini')
+config.read('/home/leo/bin/cheapWeather.ini')
+influxUser=config.get('Influx','user')
+influxPass=config.get('Influx','password')
+influxDB=config.get('Influx','database')
+influxHost=config.get('Influx','host')
+thermometer=config.get('Query','thermometer')
+station=config.get('Query','station')
 
-pressure_RAW=config.get('Main','pressure_RAW')
-pressure_scale=config.get('Main','pressure_scale')
+sense = SenseHat()
+myAltitude=config.get('Baro','myAltitude')
+Altitude=float(myAltitude)
 
-a= open(pressure_RAW)
-b= open(pressure_scale)
+pressure = (sense.get_pressure()*0.029529983071445)
 
-rawX =a.read()
-scaleX =b.read()
 
-raw = float(rawX)
-scale = float(scaleX)
 
-## Math from some old driver information, reports barometer in milibars
-## Multiply the answer by 0.029529983071445 for inches of Mercury.
+baroX=pressure/pow(1-((Altitude)/44330.0),5.255)
+baro=round((baroX),2)
+#print(baro) 
 
-inHGX= (((raw) * (scale) *10.16) * 0.029529983071445)
-inHG= round(inHGX,2)
-print(inHG)
+baroJSON = [{"measurement":"SenseHat",
 
+        "fields":
+        {
+        "Barometer":(baro)
+        }
+        },
+        ]
+
+#print(baroJSON)
+client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
+
+client.write_points(baroJSON)
