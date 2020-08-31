@@ -1,0 +1,1 @@
+SELECT cumulative_sum(non_negative_difference(last("strike_count"))) FROM "${lightningSensor}" WHERE $timeFilter GROUP BY time($__interval) fill(none)
