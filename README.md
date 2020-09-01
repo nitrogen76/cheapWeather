@@ -3,8 +3,8 @@ Weather monitoring using Grafana, influxDB and rtl_433
 
 I'm a cheapskate.  I Did not want to buy a weather station with full data export to Weather Underground.
 
-In fact, I started this project because I didn't want to buy one at ALL.  My neighbor had one, and I just wanted to 
-read the signals from his.  Unfortunately, I learned his station was placed on his roof, which raised the ambient 
+In fact, I started this project because I didn't want to buy one at ALL.  My neighbor had one, and I just wanted to
+read the signals from his.  Unfortunately, I learned his station was placed on his roof, which raised the ambient
 temps he recorded by 10º-15º.  So I rummaged around and found an old wireless temperature probe...
 
 To make a long story short, I bought a used Acurite 5in1 from Ebay for $30 because it didn't have the panel for it.
@@ -52,7 +52,7 @@ $ sudo dnf install rtl_433
 Also, while we're at it, let's get influxDB installed, as well:
 ```
 $ sudo dnf install influxdb
-$ sudo 
+$ sudo
 ```
 
 Now lets start influxdb, make sure it starts on boot, and set up some users and basic auth.
@@ -81,7 +81,7 @@ $ vi /etc/influxdb/influxdb.conf
 ```
 Add this section to the [httpd] section.
 ```
-  auth-enabled = true # 
+  auth-enabled = true #
 ```
 Now, restart influxDB:
 ```
@@ -98,7 +98,7 @@ The antenna you need is dependent on the frequency your equipment operates.  Mos
 
 Start the scanning process manually to see if you see your equipment.
 ```
-$ rtl_433 
+$ rtl_433
 ```
 If it's running on a frequency other than 433MHz, then:
 ```
@@ -148,3 +148,8 @@ HTTP Method: POST
 
 I will post separate info with queries and designs I use for my dashboard.
 
+---
+Special Thanks:
+CJG and MG for inspiring me with their RTL-SDR security demos, showing me how easily i can graph other people's weather instruments
+
+HAC for helping me learn python.
