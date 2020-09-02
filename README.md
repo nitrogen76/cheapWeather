@@ -152,4 +152,4 @@ I will post separate info with queries and designs I use for my dashboard.
 Special Thanks:
 CJG and MG for inspiring me with their RTL-SDR security demos, showing me how easily i can graph other people's weather instruments
 
-HAC for helping me learn python.
+Hailey Bannister and CJG for helping me learn python.
