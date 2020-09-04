@@ -23,7 +23,7 @@ port=8086
 
 [Wunderground]
 ## Wundergound station user and password
-user=${wondergroundUID
+user=${wondergroundUID}
 password=${wundergroundPasswd}
 
 [Query]
