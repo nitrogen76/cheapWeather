@@ -7,4 +7,4 @@
 * Better queries for lightning sensor.  (Distance should be null if there
   have been no strikes for the timefilter.)
 
-Clean up the code so it's not embarrassing garbage.
+* Clean up the code so it's not embarrassing garbage.
