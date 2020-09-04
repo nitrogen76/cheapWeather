@@ -1,4 +1,5 @@
 Sensors I use or have used:
+
 [Acurite 5n1 weather station](https://www.acurite.com/learn/installation/5in1)
 
 [Acurite 6045M Lightning Sensor](https://www.acurite.com/lightning-detector-with-temperature-and-humidity.html)
