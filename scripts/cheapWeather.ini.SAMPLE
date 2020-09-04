@@ -1,20 +1,31 @@
 [Baro]
-myAltitude=140
+
+# Set the device(s) you are using to "1" or  not using to "0"
+useSensehat=1
+useDracal=1
+
+#Please don't use the sensehat, it's cruddy.
+
 # In meters
+myAltitude=140
+
+## For Dracal Precision instruments
+dracalPath=/usr/local/bin/usbtenkiget
+dracalSwitches=-PinHG
 
 [Influx]
 
-user=
-password=
-database=
-host=
+user=${INFLUXUSERNAME}
+password=${INFLUXPASSWORD}
+database=${INFLUXDATABASENAME}
+host=${INFLUXHOST}
 port=8086
 
 [Wunderground]
-user=
-password=
+## Wundergound station user and password
+user=${wondergroundUID
+password=${wundergroundPasswd}
 
 [Query]
 thermometer="Acurite-5n1"
 station="Acurite-5n1"
-
