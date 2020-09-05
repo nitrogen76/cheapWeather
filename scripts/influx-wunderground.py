@@ -16,7 +16,7 @@ influxDB=config.get('Influx','database')
 influxHost=config.get('Influx','host')
 thermometer=config.get('Query','thermometer')
 station=config.get('Query','station')
-tempQuery='SELECT last("temperature_C") *1.8+32   FROM "Acurite-5n1"'
+query='SELECT last("temperature_C") *1.8+32   FROM '
 
 print (wundergroundUser)
 print (wundergroundPass)
@@ -29,7 +29,7 @@ print (station)
 
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
-tempF=client.query(tempQuery)
+tempF=client.query(tempQuery + station)
 #results.raw
 #humidity=client.query('SELECT last("humidity")   FROM (thermometer)')
 #windspeed=client.query('SELECT last("wind_avg_km_h") * 0.6213712 FROM (station)')
