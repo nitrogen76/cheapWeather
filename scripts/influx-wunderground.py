@@ -18,14 +18,16 @@ thermometer=config.get('Query','thermometer')
 station=config.get('Query','station')
 query='SELECT last("temperature_C") *1.8+32   FROM '
 
-print (wundergroundUser)
-print (wundergroundPass)
-print (influxUser)
-print (influxPass)
-print (influxDB)
-print (influxHost)
-print (thermometer)
-print (station)
+## DEBUG
+#print (wundergroundUser)
+#print (wundergroundPass)
+#print (influxUser)
+#print (influxPass)
+#print (influxDB)
+#print (influxHost)
+#print (thermometer)
+#print (station)
+## End # DEBUG
 
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
