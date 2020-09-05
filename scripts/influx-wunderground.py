@@ -6,7 +6,7 @@
 import configparser
 from influxdb import InfluxDBClient
 config = configparser.ConfigParser()
-config.read('influx-wunderground.ini')
+config.read('/home/leo/bin/cheapWeather.ini')
 
 wundergroundUser=config.get('Wunderground','user')
 wundergroundPass=config.get('Wunderground','password')
