@@ -36,7 +36,7 @@ client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), pas
 
 tempF=client.query(query + station)
 tempResult = tempF.raw
-pprint(tempResult['values'])
+pprint(tempResult)
 #results.raw
 #humidity=client.query('SELECT last("humidity")   FROM (thermometer)')
 #windspeed=client.query('SELECT last("wind_avg_km_h") * 0.6213712 FROM (station)')
