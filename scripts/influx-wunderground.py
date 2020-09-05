@@ -5,7 +5,7 @@
 ##
 import configparser
 import json
-import requests
+from pprint import pprint
 
 from influxdb import InfluxDBClient
 config = configparser.ConfigParser()
