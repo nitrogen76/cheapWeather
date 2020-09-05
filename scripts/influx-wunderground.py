@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ##
-## Influx to Wunderground 
+## Influx to Wunderground
 ##
 ##
 import configparser
@@ -41,4 +41,3 @@ print(tempF)
 #print(windspeed)
 #print(winddir)
 #print(windgust)
-
