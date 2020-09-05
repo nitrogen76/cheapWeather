@@ -5,6 +5,8 @@
 ##
 import configparser
 import json
+import requests
+
 from influxdb import InfluxDBClient
 config = configparser.ConfigParser()
 config.read('/home/leo/bin/cheapWeather.ini')
