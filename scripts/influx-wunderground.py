@@ -3,15 +3,21 @@
 ## Influx to Wunderground
 ##
 ##
+
+## Imports
 import configparser
-import json
+import requests
 import re
 from pprint import pprint
 
 from influxdb import InfluxDBClient
+
+
+# Get config info
 config = configparser.ConfigParser()
 config.read('/home/leo/bin/cheapWeather.ini')
 
+### Variables
 wundergroundUser=config.get('Wunderground','user')
 wundergroundPass=config.get('Wunderground','password')
 influxUser=config.get('Influx','user')
@@ -31,6 +37,9 @@ windgustQuery='SELECT top("wind_avg_km_h", 1) * 0.6213712 FROM '
 gustTime='WHERE time > now() - 15m'
 baroQuery='SELECT last("Barometer") FROM '
 
+WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
+WUcreds = "ID=" + wundergroundUser + "&PASSWORD="+ wundergroundPass
+######
 
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
@@ -96,3 +105,5 @@ print ("Wind MPH "+ windMPH)
 print("Direction " + windDIR)
 print("Gust " + windGustMPH)
 print("Barometer " + baroINHG)
+
+wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG)
