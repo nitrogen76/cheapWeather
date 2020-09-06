@@ -32,57 +32,67 @@ gustTime='WHERE time > now() - 15m'
 baroQuery='SELECT last("Barometer") FROM '
 
 
-
-## DEBUG
-#print (wundergroundUser)
-#print (wundergroundPass)
-#print (influxUser)
-#print (influxPass)
-#print (influxDB)
-#print (influxHost)
-#print (thermometer)
-#print (station)
-## End # DEBUG
-
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
 
 ## Get last temp
-temp=client.query(tempQuery + station)
-##tempResult = tempF.raw
-tempString=str(temp)
-
-print(tempString)
-tempSliced=tempString.split(':')[5]
-print("Sliced " +tempSliced)
-tempF=tempSliced.split('}')[0]
+tmp=client.query(tempQuery + station)
+tmpString=str(tmp)
+print(tmpString)
+tmpSliced=tmpString.split(':')[5]
+print("Sliced " +tmpSliced)
+tempF=tmpSliced.split('}')[0]
 print("Diced " +tempF)
 
 ## Get last humidity
-humidity=client.query(humidityQuery + station)
+tmp=client.query(humidityQuery + station)
+tmpString=str(tmp)
+print(tmpString)
+tmpSliced=tmpString.split(':')[5]
+print("Sliced " +tmpSliced)
+humidityP=tmpSliced.split('}')[0]
+print("Diced " +humidityP)
 
 ## Get last windspeed
-windSpeed=client.query(windspeedQuery + windStation)
+tmp=client.query(windspeedQuery + windStation)
+tmpString=str(tmp)
+print(tmpString)
+tmpSliced=tmpString.split(':')[5]
+print("Sliced " +tmpSliced)
+windMPH=tmpSliced.split('}')[0]
+print("Diced " +windMPH)
 
 ## Get last winddir
-windDir=client.query(winddirQuery + windStation)
+tmp=client.query(winddirQuery + windStation)
+tmpString=str(tmp)
+print(tmpString)
+tmpSliced=tmpString.split(':')[5]
+print("Sliced " +tmpSliced)
+windDIR=tmpSliced.split('}')[0]
+print("Diced " +windDIR)
+
 
 ## get last windgust
-windGust=client.query(windgustQuery + windStation + gustTime)
+tmp=client.query(windgustQuery + windStation)
+tmpString=str(tmp)
+print(tmpString)
+tmpSliced=tmpString.split(':')[5]
+print("Sliced " +tmpSliced)
+windGustMPH=tmpSliced.split('}')[0]
+print("Diced " +windGustMPH)
 
 ## get last barometer
-barometer=client.query()
+tmp=client.query(barometerQuery + baroStation)
+tmpString=str(tmp)
+print(tmpString)
+tmpSliced=tmpString.split(':')[5]
+print("Sliced " +tmpSliced)
+baroINHG=tmpSliced.split('}')[0]
+print("Diced " +baroINHG)
 
-
-
-#results.raw
-#humidity=client.query('SELECT last("humidity")   FROM (thermometer)')
-#windspeed=client.query('SELECT last("wind_avg_km_h") * 0.6213712 FROM (station)')
-#winddir=client.query('SELECT last("wind_dir_deg")  FROM (station)')
-#windgust=client.query('SELECT top("wind_avg_km_h", 1) * 0.6213712 FROM (station) WHERE time > now() - 15m')
-
-#print(tempF)
-#print(humidity)
-#print(windspeed)
-#print(winddir)
-#print(windgust)
+print("TempF" + TempF)
+print("Humidity" + humidityP)
+print ("Wind MPH "+ windMPH)
+print("Direction " + windDIR)
+print("Gust " + windGustMPH)
+print("Barometer " + baroINHG)
