@@ -39,6 +39,7 @@ tempF=client.query(query + station)
 tempResult = tempF.raw
 pprint(tempResult)
 slicedResult=tempResult['series']
+pprint(slicedResult)
 #results.raw
 #humidity=client.query('SELECT last("humidity")   FROM (thermometer)')
 #windspeed=client.query('SELECT last("wind_avg_km_h") * 0.6213712 FROM (station)')
