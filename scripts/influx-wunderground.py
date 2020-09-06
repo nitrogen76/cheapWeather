@@ -29,7 +29,7 @@ windspeedQuery='SELECT last("wind_avg_km_h") * 0.6213712 FROM '
 winddirQuery='SELECT last("wind_dir_deg")  FROM '
 windgustQuery='SELECT top("wind_avg_km_h", 1) * 0.6213712 FROM '
 gustTime='WHERE time > now() - 15m'
-baroQuery
+baroQuery=SELECT last("Barometer") FROM '
 
 
 
