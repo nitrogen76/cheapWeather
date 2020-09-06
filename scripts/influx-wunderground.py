@@ -38,11 +38,11 @@ client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), pas
 ## Get last temp
 tmp=client.query(tempQuery + station)
 tmpString=str(tmp)
-print(tmpString)
+#print(tmpString)
 tmpSliced=tmpString.split(':')[5]
-print("Sliced " +tmpSliced)
+#print("Sliced " +tmpSliced)
 tempF=tmpSliced.split('}')[0]
-print("Diced " +tempF)
+#print("Diced " +tempF)
 
 ## Get last humidity
 tmp=client.query(humidityQuery + station)
