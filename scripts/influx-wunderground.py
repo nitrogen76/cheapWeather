@@ -36,9 +36,14 @@ query='SELECT last("temperature_C") *1.8+32   FROM '
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
 tempF=client.query(query + station)
-tempResult = tempF.raw
-pprint(tempResult)
-print(tempResult['series'].get('values'))
+##tempResult = tempF.raw
+tempString=str(tempF)
+
+print(tempString)
+tempSliced=tempString.split(':')[5]
+print("Sliced " +tempSliced)
+tempDiced=tempSliced.split('}')[0]
+print("Diced " +tempDiced)
 
 #results.raw
 #humidity=client.query('SELECT last("humidity")   FROM (thermometer)')
