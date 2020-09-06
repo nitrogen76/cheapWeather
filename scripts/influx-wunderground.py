@@ -20,7 +20,18 @@ influxDB=config.get('Influx','database')
 influxHost=config.get('Influx','host')
 thermometer=config.get('Query','thermometer')
 station=config.get('Query','station')
-query='SELECT last("temperature_C") *1.8+32   FROM '
+windStation=config.get('Query','windstation')
+baroStation=config.get('Query','barostation')
+
+tempQuery='SELECT last("temperature_C") *1.8+32   FROM '
+humidityQuery='SELECT last("humidity")   FROM '
+windspeedQuery='SELECT last("wind_avg_km_h") * 0.6213712 FROM '
+winddirQuery='SELECT last("wind_dir_deg")  FROM '
+windgustQuery='SELECT top("wind_avg_km_h", 1) * 0.6213712 FROM '
+gustTime='WHERE time > now() - 15m'
+baroQuery
+
+
 
 ## DEBUG
 #print (wundergroundUser)
@@ -35,15 +46,34 @@ query='SELECT last("temperature_C") *1.8+32   FROM '
 
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
-tempF=client.query(query + station)
+
+## Get last temp
+temp=client.query(tempQuery + station)
 ##tempResult = tempF.raw
-tempString=str(tempF)
+tempString=str(temp)
 
 print(tempString)
 tempSliced=tempString.split(':')[5]
 print("Sliced " +tempSliced)
-tempDiced=tempSliced.split('}')[0]
-print("Diced " +tempDiced)
+tempF=tempSliced.split('}')[0]
+print("Diced " +tempF)
+
+## Get last humidity
+humidity=client.query(humidityQuery + station)
+
+## Get last windspeed
+windSpeed=client.query(windspeedQuery + windStation)
+
+## Get last winddir
+windDir=client.query(winddirQuery + windStation)
+
+## get last windgust
+windGust=client.query(windgustQuery + windStation + gustTime)
+
+## get last barometer
+barometer=client.query()
+
+
 
 #results.raw
 #humidity=client.query('SELECT last("humidity")   FROM (thermometer)')
