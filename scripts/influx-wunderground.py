@@ -5,6 +5,7 @@
 ##
 import configparser
 import json
+import re
 from pprint import pprint
 
 from influxdb import InfluxDBClient
