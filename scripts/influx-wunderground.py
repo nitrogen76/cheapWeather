@@ -49,7 +49,6 @@ tmp=client.query(tempQuery + station)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 tempF=tmpSliced.split('}')[0]
-<<<<<<< HEAD
 tempF=tempF.strip()
 
 ## Get last humidity
