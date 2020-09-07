@@ -157,7 +157,7 @@ The scripts are crap, it's just baby's first python scripts.  I'll welcome any P
 Got panels?  Got good (better?) queries? I'll take 'em!
 
 If you have multiple weather equipment on multiple frequencies, you can handle that 2 ways:
-* You can tell rtl_433 to lock down the specific protocls you care about (`-R ${protocolnum}`) then `-E hop`.  `-F` takes multiple frequencies (`-F 915M -F 433M`)
+* You can tell rtl_433 to lock down the specific protocls you care about (`-R ${protocolnum}`) then `-E hop`.  `-f` takes multiple frequencies (`-f 915M -f 433M`)
 * You can get a second rtl-sdr dongle and run 2 versions of rtl_433 at the same time.  If you do this, you'll need to use rtl_eerpom to set a serial number, then specify the specific radio/antenna pair with `-d :serialnum` (the colon is important)
 
 * I've included an example of my commandline for starting rtl_433, it includes the command line choices:
