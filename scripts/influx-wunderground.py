@@ -18,7 +18,7 @@ config = configparser.ConfigParser()
 config.read('/home/leo/bin/cheapWeather.ini')
 
 ### Variables
-softwareVersion='softwaretype=cheapWeather%20version%20Zonda'
+softwareVersion='&softwaretype=cheapWeather%20version%20Zonda'
 wundergroundUser=config.get('Wunderground','user')
 wundergroundPass=config.get('Wunderground','password')
 influxUser=config.get('Influx','user')
