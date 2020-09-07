@@ -93,6 +93,6 @@ baroINHG=baroINHG.strip()
 #print("Gust " + windGustMPH)
 #print("Barometer " + baroINHG)
 
-wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + softwareVersion)
+wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "&tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + softwareVersion)
 httpstatus=requests.get(wundergroundRequest)
 print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
