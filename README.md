@@ -148,6 +148,23 @@ HTTP Method: POST
 
 I will post separate info with queries and designs I use for my dashboard.
 
+Some additional notes:
+Dewpoints are a hack. They are calculated every minute in the influx-wunderground.py script.
+If you aren't sending data to wunderground, you'll have to modify the script right now to get dewpoints.  You need InfluxDB 2.0 support to do proper joins to calculate dewpoints in Grafana.  When InfluxDB2.0 is in General Release ithere's already a howto to do that.  I just can't get Flux queries to work on my current setup, and it's not as fun to troubleshoot as this.
+
+The scripts are crap, it's just baby's first python scripts.  I'll welcome any PR's to help clean up my garbage and educate me better.
+
+Got panels?  Got good (better?) queries? I'll take 'em!
+
+If you have multiple weather equipment on multiple frequencies, you can handle that 2 ways:
+* You can tell rtl_433 to lock down the specific protocls you care about (`-R ${protocolnum}`) then `-E hop`.  `-f` takes multiple frequencies (`-f 915M -f 433M`)
+* You can get a second rtl-sdr dongle and run 2 versions of rtl_433 at the same time.  If you do this, you'll need to use rtl_eerpom to set a serial number, then specify the specific radio/antenna pair with `-d :serialnum` (the colon is important)
+
+* I've included an example of my commandline for starting rtl_433, it includes the command line choices:
+I recommend using:
+`-M protocol -M level -C si -M time:unix:usec:utc`
+at minimum.
+
 ---
 Special Thanks:
 CJG and MG for inspiring me with their RTL-SDR security demos, showing me how easily i can graph other people's weather instruments
