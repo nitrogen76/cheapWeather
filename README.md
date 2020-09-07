@@ -1,4 +1,4 @@
-# cheapWeather
+baby's# cheapWeather
 Weather monitoring using Grafana, influxDB and rtl_433
 
 I'm a cheapskate.  I Did not want to buy a weather station with full data export to Weather Underground.
@@ -147,6 +147,16 @@ Database, user and password.
 HTTP Method: POST
 
 I will post separate info with queries and designs I use for my dashboard.
+
+Some additional notes:
+Dewpoints are a hack. They are calculated every minute in the influx-wunderground.py script.
+If you aren't sending data to wunderground, you'll have to modify the script right now to get dewpoints.  You need InfluxDB 2.0 support to do proper joins to calculate dewpoints in Grafana.  When InfluxDB2.0 is in General Release ithere's already a howto to do that.  I just can't get Flux queries to work on my current setup, and it's not as fun to troubleshoot as this.
+
+The scripts are crap, it's just baby's first python scripts.  I'll welcome any PR's to help clean up my garbage and educate me better.
+
+Got panels?  Got good (better?) queries? I'll take 'em!
+
+
 
 ---
 Special Thanks:
