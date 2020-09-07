@@ -71,7 +71,7 @@ tmp=client.query(winddirQuery + windStation)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 windDIR=tmpSliced.split('}')[0]
-windDIR=windDir.strip()
+windDIR=windDIR.strip()
 
 ## get last windgust
 tmp=client.query(windgustQuery + windStation + gustTime)
