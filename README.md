@@ -1,4 +1,4 @@
-baby's# cheapWeather
+# cheapWeather
 Weather monitoring using Grafana, influxDB and rtl_433
 
 I'm a cheapskate.  I Did not want to buy a weather station with full data export to Weather Underground.
