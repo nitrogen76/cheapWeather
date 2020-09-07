@@ -84,7 +84,7 @@ tmp=client.query(baroQuery + baroStation)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 baroINHG=tmpSliced.split('}')[0]
-baroINHG=baroINGH.strip()
+baroINHG=baroINHG.strip()
 
 print("TempF" + tempF)
 print("Humidity" + humidityP)
