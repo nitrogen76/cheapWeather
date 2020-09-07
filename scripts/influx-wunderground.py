@@ -79,6 +79,7 @@ tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 windGustMPH=tmpSliced.split('}')[0]
 windGustMPH=windGustMPH.strip()
+
 ## get last barometer
 tmp=client.query(baroQuery + baroStation)
 tmpString=str(tmp)
@@ -94,6 +95,6 @@ baroINHG=baroINHG.strip()
 #print("Barometer " + baroINHG)
 
 wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "&tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + softwareVersion)
-print (wundergroundRequest)
+##print (wundergroundRequest)
 httpstatus=requests.get(wundergroundRequest)
 print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
