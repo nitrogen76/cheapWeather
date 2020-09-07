@@ -47,63 +47,43 @@ client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), pas
 ## Get last temp
 tmp=client.query(tempQuery + station)
 tmpString=str(tmp)
-#print(tmpString)
 tmpSliced=tmpString.split(':')[5]
-#print("Sliced " +tmpSliced)
 tempF=tmpSliced.split('}')[0]
-#print("Diced " +tempF)
-
 tempF=tempF.strip()
+
 ## Get last humidity
 tmp=client.query(humidityQuery + station)
 tmpString=str(tmp)
-##print(tmpString)
 tmpSliced=tmpString.split(':')[5]
-##print("Sliced " +tmpSliced)
 humidityP=tmpSliced.split('}')[0]
 humidityP=humidityP.strip()
-##print("Diced " +humidityP)
 
 ## Get last windspeed
 tmp=client.query(windspeedQuery + windStation)
 tmpString=str(tmp)
-##print(tmpString)
 tmpSliced=tmpString.split(':')[5]
-##print("Sliced " +tmpSliced)
 windMPH=tmpSliced.split('}')[0]
 windMPH=windMPH.strip()
-##print("Diced " +windMPH)
 
 ## Get last winddir
 tmp=client.query(winddirQuery + windStation)
 tmpString=str(tmp)
-##print(tmpString)
 tmpSliced=tmpString.split(':')[5]
-##print("Sliced " +tmpSliced)
 windDIR=tmpSliced.split('}')[0]
-windDIR=windDIR.strip()
-##print("Diced " +windDIR)
-
+windDIR=windDir.strip()
 
 ## get last windgust
-tmp=client.query(windgustQuery + windStation)
+tmp=client.query(windgustQuery + windStation + gustTime)
 tmpString=str(tmp)
-##print(tmpString)
 tmpSliced=tmpString.split(':')[5]
-##print("Sliced " +tmpSliced)
 windGustMPH=tmpSliced.split('}')[0]
 windGustMPH=windGustMPH.strip()
-##print("Diced " +windGustMPH)
-
 ## get last barometer
 tmp=client.query(baroQuery + baroStation)
 tmpString=str(tmp)
-##print(tmpString)
 tmpSliced=tmpString.split(':')[5]
-##print("Sliced " +tmpSliced)
 baroINHG=tmpSliced.split('}')[0]
-baroINHG=baroINHG.strip()
-##print("Diced " +baroINHG)
+baroINHG=baroINGH.strip()
 
 print("TempF" + tempF)
 print("Humidity" + humidityP)
