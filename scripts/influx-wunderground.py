@@ -8,6 +8,7 @@
 import configparser
 import requests
 import re
+import weathermath
 
 from influxdb import InfluxDBClient
 
@@ -30,6 +31,7 @@ windStation=config.get('Query','windstation')
 baroStation=config.get('Query','barostation')
 
 tempQuery='SELECT last("temperature_C") *1.8+32   FROM '
+tempQueryC='SELECT last("temperature_C") FROM '
 humidityQuery='SELECT last("humidity")   FROM '
 windspeedQuery='SELECT last("wind_avg_km_h") * 0.6213712 FROM '
 winddirQuery='SELECT last("wind_dir_deg")  FROM '
@@ -51,12 +53,24 @@ tmpSliced=tmpString.split(':')[5]
 tempF=tmpSliced.split('}')[0]
 tempF=tempF.strip()
 
+# get last temp C
+tmpC=client.query(tempQueryC + station)
+tmpString=str(tmpC)
+tmpSliced=tmpString.split(':')[5]
+tempC=tmpSliced.split('}')[0]
+tempC=tempC.strip()
+tempC=float(tempC)
+
+
+
+
 ## Get last humidity
 tmp=client.query(humidityQuery + station)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 humidityP=tmpSliced.split('}')[0]
 humidityP=humidityP.strip()
+humidityPF=float(humidityP)
 
 ## Get last windspeed
 tmp=client.query(windspeedQuery + windStation)
@@ -97,3 +111,20 @@ wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humid
 ##print (wundergroundRequest)
 httpstatus=requests.get(wundergroundRequest)
 print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
+
+dewPoint=weathermath.get_dew_point_c(tempC,humidityPF)
+print(dewPoint)
+
+dewpointJSON = [{"measurement":"Dewpoint",
+
+    "fields":
+    {
+    "dewpoint":(dewPoint)
+    }
+    },
+    ]
+
+
+##print (dewpointJSON)
+client.write_points(dewpointJSON)
+
