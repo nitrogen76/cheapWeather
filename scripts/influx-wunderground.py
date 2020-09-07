@@ -8,7 +8,6 @@
 import configparser
 import requests
 import re
-from pprint import pprint
 
 from influxdb import InfluxDBClient
 
