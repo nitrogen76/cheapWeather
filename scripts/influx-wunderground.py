@@ -86,12 +86,12 @@ tmpSliced=tmpString.split(':')[5]
 baroINHG=tmpSliced.split('}')[0]
 baroINHG=baroINHG.strip()
 
-print("TempF" + tempF)
-print("Humidity" + humidityP)
-print ("Wind MPH "+ windMPH)
-print("Direction " + windDIR)
-print("Gust " + windGustMPH)
-print("Barometer " + baroINHG)
+#print("TempF" + tempF)
+#print("Humidity" + humidityP)
+##print ("Wind MPH "+ windMPH)
+#print("Direction " + windDIR)
+#print("Gust " + windGustMPH)
+#print("Barometer " + baroINHG)
 
 wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + softwareVersion)
 httpstatus=requests.get(wundergroundRequest)
