@@ -51,66 +51,41 @@ tmpSliced=tmpString.split(':')[5]
 tempF=tmpSliced.split('}')[0]
 <<<<<<< HEAD
 tempF=tempF.strip()
-=======
-
-#print("Diced " +tempF)
->>>>>>> d4ada5df0be69bb2adc6ae83595db78b667defec
 
 ## Get last humidity
 tmp=client.query(humidityQuery + station)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 humidityP=tmpSliced.split('}')[0]
-<<<<<<< HEAD
 humidityP=humidityP.strip()
-=======
-##print("Diced " +humidityP)
->>>>>>> d4ada5df0be69bb2adc6ae83595db78b667defec
 
 ## Get last windspeed
 tmp=client.query(windspeedQuery + windStation)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 windMPH=tmpSliced.split('}')[0]
-<<<<<<< HEAD
 windMPH=windMPH.strip()
-=======
-##print("Diced " +windMPH)
->>>>>>> d4ada5df0be69bb2adc6ae83595db78b667defec
 
 ## Get last winddir
 tmp=client.query(winddirQuery + windStation)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 windDIR=tmpSliced.split('}')[0]
-<<<<<<< HEAD
 windDIR=windDir.strip()
-=======
-##print("Diced " +windDIR)
-
->>>>>>> d4ada5df0be69bb2adc6ae83595db78b667defec
 
 ## get last windgust
 tmp=client.query(windgustQuery + windStation + gustTime)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 windGustMPH=tmpSliced.split('}')[0]
-<<<<<<< HEAD
 windGustMPH=windGustMPH.strip()
-=======
-##print("Diced " +windGustMPH)
 
->>>>>>> d4ada5df0be69bb2adc6ae83595db78b667defec
 ## get last barometer
 tmp=client.query(baroQuery + baroStation)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 baroINHG=tmpSliced.split('}')[0]
-<<<<<<< HEAD
 baroINHG=baroINGH.strip()
-=======
-##print("Diced " +baroINHG)
->>>>>>> d4ada5df0be69bb2adc6ae83595db78b667defec
 
 print("TempF" + tempF)
 print("Humidity" + humidityP)
