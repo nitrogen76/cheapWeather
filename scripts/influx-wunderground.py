@@ -18,6 +18,7 @@ config = configparser.ConfigParser()
 config.read('/home/leo/bin/cheapWeather.ini')
 
 ### Variables
+softwareVersion='softwaretype=cheapWeather%20version%20Zonda'
 wundergroundUser=config.get('Wunderground','user')
 wundergroundPass=config.get('Wunderground','password')
 influxUser=config.get('Influx','user')
@@ -70,7 +71,7 @@ tmp=client.query(winddirQuery + windStation)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 windDIR=tmpSliced.split('}')[0]
-windDIR=windDIR.strip()
+windDIR=windDir.strip()
 
 ## get last windgust
 tmp=client.query(windgustQuery + windStation + gustTime)
@@ -78,13 +79,12 @@ tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 windGustMPH=tmpSliced.split('}')[0]
 windGustMPH=windGustMPH.strip()
-
 ## get last barometer
 tmp=client.query(baroQuery + baroStation)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 baroINHG=tmpSliced.split('}')[0]
-baroINHG=baroINHG.strip()
+baroINHG=baroINGH.strip()
 
 print("TempF" + tempF)
 print("Humidity" + humidityP)
@@ -93,5 +93,6 @@ print("Direction " + windDIR)
 print("Gust " + windGustMPH)
 print("Barometer " + baroINHG)
 
-wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG)
-print (wundergroundRequest)
+wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + softwareVersion)
+httpstatus=requests.get(wundergroundRequest)
+print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
