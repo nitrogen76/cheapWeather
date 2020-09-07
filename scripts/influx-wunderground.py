@@ -114,3 +114,6 @@ print("Barometer " + baroINHG)
 
 wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG)
 print (wundergroundRequest)
+
+statWWW=requests.get(wundergroundRequest)
+print("Received " + str(statWWW.status_code) + " " + str(statWWW.text))
