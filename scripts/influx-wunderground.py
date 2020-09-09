@@ -9,6 +9,7 @@ import configparser
 import requests
 import re
 import weathermath
+import heatindex
 
 from influxdb import InfluxDBClient
 
@@ -124,7 +125,17 @@ dewpointJSON = [{"measurement":"Dewpoint",
     },
     ]
 
+heatIndex=heatindex.from_celsius(tempC,humidityPF)
+heatIndexJSON = [{"measurement":"Heatindex",
+
+    "fields":
+    {
+    "heatindex":(heatIndex)
+    }
+    },
+    ]
+
 
 ##print (dewpointJSON)
 client.write_points(dewpointJSON)
-
+client.write_points(heatIndexJSON)
