@@ -111,10 +111,10 @@ baroINHG=baroINHG.strip()
 dewPoint=weathermath.get_dew_point_c(tempC,humidityPF)
 heatIndex=heatindex.from_celsius(tempC,humidityPF)
 
-dewPointF=((dewPoint)* 1.8000 + 32.00)
-heatIndexF=((heatIndex)* 1.8000 + 32.00)
-print(dewPointF)
-print(heatIndexF)
+dewPointFlo=((dewPoint)* 1.8000 + 32.00)
+heatIndexFlo=((heatIndex)* 1.8000 + 32.00)
+heatIndexF=str(heatIndexFlo)
+dewPointF=str(dewPointFlo)
 dewpointJSON = [{"measurement":"Dewpoint",
 
     "fields":
