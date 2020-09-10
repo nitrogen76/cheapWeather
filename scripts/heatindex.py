@@ -2,7 +2,7 @@
 # Heat Index calculator
 #
 from typing import Union
-from .coefficients import coefficients as C
+from coefficients import coefficients as C
 
 
 def from_celsius(temperature, relative_humidity):
