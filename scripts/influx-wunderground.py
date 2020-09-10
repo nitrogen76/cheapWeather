@@ -108,14 +108,13 @@ baroINHG=baroINHG.strip()
 #print("Gust " + windGustMPH)
 #print("Barometer " + baroINHG)
 
-wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "&tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + softwareVersion)
-##print (wundergroundRequest)
-httpstatus=requests.get(wundergroundRequest)
-print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
-
 dewPoint=weathermath.get_dew_point_c(tempC,humidityPF)
-##print(dewPoint)
+heatIndex=heatindex.from_celsius(tempC,humidityPF)
 
+dewPointF=((dewPoint)* 1.8000 + 32.00)
+heatIndexF=((heatIndex)* 1.8000 + 32.00)
+print(dewPointF)
+print(heatIndexF)
 dewpointJSON = [{"measurement":"Dewpoint",
 
     "fields":
@@ -125,7 +124,6 @@ dewpointJSON = [{"measurement":"Dewpoint",
     },
     ]
 
-heatIndex=heatindex.from_celsius(tempC,humidityPF)
 heatIndexJSON = [{"measurement":"Heatindex",
 
     "fields":
@@ -139,3 +137,14 @@ heatIndexJSON = [{"measurement":"Heatindex",
 ##print (dewpointJSON)
 client.write_points(dewpointJSON)
 client.write_points(heatIndexJSON)
+
+## hack hack bad code alert
+
+
+wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "&tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + softwareVersion)
+##print (wundergroundRequest)
+httpstatus=requests.get(wundergroundRequest)
+print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
+
+
+##print(dewPoint)
