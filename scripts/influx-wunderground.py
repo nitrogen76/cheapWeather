@@ -114,7 +114,7 @@ httpstatus=requests.get(wundergroundRequest)
 print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
 
 dewPoint=weathermath.get_dew_point_c(tempC,humidityPF)
-print(dewPoint)
+##print(dewPoint)
 
 dewpointJSON = [{"measurement":"Dewpoint",
 
