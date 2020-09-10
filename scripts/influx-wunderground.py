@@ -141,7 +141,7 @@ client.write_points(heatIndexJSON)
 ## hack hack bad code alert
 
 
-wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "&tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + softwareVersion)
+wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + humidityP + "&tempf=" + tempF + "&winddir=" + windDIR + "&windspeedmph=" + windMPH + "&windgustmph=" + windGustMPH + "&baromin=" + baroINHG + "&dewptf=" +dewPointF + softwareVersion)
 ##print (wundergroundRequest)
 httpstatus=requests.get(wundergroundRequest)
 print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
