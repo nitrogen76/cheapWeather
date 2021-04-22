@@ -11,3 +11,5 @@
 * See about an easy way to switch between Freedom Units and SI units.  All backend values are in SI units, to make computation easier, but it's a bit of a hack right now to get all the output in Freedom Units.  IT should be easily switchable instead of modifying each query.  
 * See about automatically calculating a forecast from historical values and deltas.
 * Modify wunderground script to disable dewpoint calculation or wunderground uploads (or fix dewpoint queries)
+
+* Convert to MetPy for all the calculation crap.  It crashed hard on raspibian which I hate.
