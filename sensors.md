@@ -1,6 +1,6 @@
 Sensors I use or have used:
 
-[Acurite 5n1 weather station](https://www.acurite.com/learn/installation/5in1). The temp sensor on this weather station is garbage.  Use one of the other sensors in a solar-shielded housing.  There's an [PRO+ sensor upgrade](https://www.amazon.com/gp/product/B00T0K8MJW/) that I will test to see if it improves.
+[Acurite 5n1 weather station](https://www.acurite.com/learn/installation/5in1). The temp sensor on this weather station is garbage.  Use one of the other sensors in a solar-shielded housing.  There's an [PRO+ sensor upgrade](https://www.amazon.com/gp/product/B00T0K8MJW/) that makes the temperature swings a bit less pronounced, but I still recommend one of the other Accurite or LaCrosse sensors as an addition to temperature monitoring.
 
 [Acurite 6045M Lightning Sensor](https://www.acurite.com/lightning-detector-with-temperature-and-humidity.html) Get this [Solar Shield](https://www.amazon.com/gp/product/B01M64ISDE/) for it, it's a better temp sensor than the 5n1
 
