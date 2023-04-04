@@ -1,3 +1,6 @@
 [submodule "usbtenki"]
 	path = usbtenki
 	url = https://github.com/Dracaltech/usbtenki
+[submodule "rtl_433"]
+	path = rtl_433
+	url = https://github.com/merbanan/rtl_433
