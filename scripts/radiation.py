@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+## pip install gmc
+## will get the module you need.
+
 from gmc import GMC
 from influxdb import InfluxDBClient
 import configparser
