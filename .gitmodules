@@ -1,0 +1,3 @@
+[submodule "usbtenki"]
+	path = usbtenki
+	url = https://github.com/Dracaltech/usbtenki
