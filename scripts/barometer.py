@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from sense_hat import SenseHat
+##from sense_hat import SenseHat
 import math
 import time
 import configparser
@@ -11,7 +11,7 @@ import sys
 
 config = configparser.ConfigParser()
 ## Not smart enough to make this plug in yet, so change it for you!
-config.read('/home/leo/bin/cheapWeather.ini')
+config.read('/local/leo/cheapWeather/cheapWeather.ini')
 
 useDracal=config.get('Baro','useDracal')
 useSensehat=config.get('Baro','useSenseHat')
@@ -69,7 +69,7 @@ if useDracal == "1":
     dracalBaro=(result.stdout).strip()
     dracalBaroFloat=float(dracalBaro)
     #DEBUG
-    #print (dracalBaroFloat)
+    print (dracalBaroFloat)
     #END DEBUG
     #This sensor has a temp sensor, lets grab that data also, why not?
     temp=subprocess.run([(dracalPath),(dracalSwitches), "-x19","-i1" ], capture_output=True)
@@ -77,14 +77,15 @@ if useDracal == "1":
     dracalTempFloat=float(dracalTemp)
     ##dracalBaroX = dracalBaroFloat + (( dracalBaroFloat * 9.80665 * Altitude)/(287 * (273 + dracalTempFloat + (Altitude/400))))
     dracalBaroSL=dracalBaroFloat/pow(1-((Altitude)/44330.0),5.255)
-    #dracalBaroSL=(dracalBaroX*0.02953)
-    ##print(dracalBaroSL)
+    ##dracalBaroSL=(dracalBaroX*0.02953)
+    print(dracalBaroSL)
     dracalBaroJSON = [{"measurement":"Dracal",
 
         "fields":
         {
         "Barometer":(dracalBaroSL),
-        "Thermometer":(dracalTempFloat)
+        "Thermometer":(dracalTempFloat),
+        "UnCorrectedBarometer":(dracalBaroFloat)
         }
         }
         ]

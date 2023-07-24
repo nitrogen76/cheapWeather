@@ -10,13 +10,15 @@ import requests
 import re
 import weathermath
 import heatindex
+import metpy.calc as mpcalc
+from metpy.units import units
 
 from influxdb import InfluxDBClient
 
 
 # Get config info
 config = configparser.ConfigParser()
-config.read('/home/leo/bin/cheapWeather.ini')
+config.read('/local/leo/cheapWeather/cheapWeather.ini')
 
 ### Variables
 softwareVersion='&softwaretype=cheapWeather%20version%20Zonda'
@@ -100,6 +102,7 @@ tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 baroINHG=tmpSliced.split('}')[0]
 baroINHG=baroINHG.strip()
+BBB=float(baroINHG)
 
 #print("TempF" + tempF)
 #print("Humidity" + humidityP)
@@ -115,6 +118,22 @@ dewPointFlo=((dewPoint)* 1.8000 + 32.00)
 heatIndexFlo=((heatIndex)* 1.8000 + 32.00)
 heatIndexF=str(heatIndexFlo)
 dewPointF=str(dewPointFlo)
+
+## Wet Bulb Calculations
+T=(tempC * units.degC)
+B=(BBB * units.inHg)
+D=(dewPoint * units.degC)
+
+print (T, B, D)
+
+wbt_raw=mpcalc.wet_bulb_temperature(B,T,D)
+
+
+
+wbt=float(str(wbt_raw).replace("degree_Celsius", ""))
+print (wbt)
+
+
 dewpointJSON = [{"measurement":"Dewpoint",
 
     "fields":
@@ -133,11 +152,20 @@ heatIndexJSON = [{"measurement":"Heatindex",
     },
     ]
 
+WBTIndexJSON = [{"measurement":"Wet Bulb Temp",
+
+    "fields":
+    {
+    "Wet Bulb Temp":(wbt)
+    }
+    },
+    ]
+
 
 ##print (dewpointJSON)
 client.write_points(dewpointJSON)
 client.write_points(heatIndexJSON)
-
+client.write_points (WBTIndexJSON)
 ## hack hack bad code alert
 
 
