@@ -8,7 +8,7 @@ from influxdb import InfluxDBClient
 import configparser
 
 config = configparser.ConfigParser()
-config.read('/home/leo/bin/cheapWeather.ini')
+config.read('/local/leo/cheapWeather/cheapWeather.ini')
 
 influxUser=config.get('Influx','user')
 influxPass=config.get('Influx','password')
