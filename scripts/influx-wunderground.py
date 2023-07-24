@@ -124,14 +124,12 @@ T=(tempC * units.degC)
 B=(BBB * units.inHg)
 D=(dewPoint * units.degC)
 
-print (T, B, D)
 
 wbt_raw=mpcalc.wet_bulb_temperature(B,T,D)
 
 
 
 wbt=float(str(wbt_raw).replace("degree_Celsius", ""))
-print (wbt)
 
 
 dewpointJSON = [{"measurement":"Dewpoint",
