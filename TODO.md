@@ -13,3 +13,5 @@
 * Modify wunderground script to disable dewpoint calculation or wunderground uploads (or fix dewpoint queries)
 
 * Convert to MetPy for all the calculation crap.  It crashed hard on raspibian which I hate.
+
+* Implement [Airgradient](https://www.airgradient.com) monitoring
