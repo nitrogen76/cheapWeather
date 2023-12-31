@@ -14,4 +14,8 @@ Sensors I use or have used:
 
 GMC 320 geiger counter from GQ  (Not via rtl433)
 
+[AirGradient air quality Sensors](https://www.airgradient.com/) They currently have an API that is scrapable via telegraf http input plugin durectly into influxdb. (not via rtl433)
+There are custom firmwares that will allow you to scrape directly.  Also, MQTT is on the roadmap for newer sensors.
+
+
 Any sensor that is powered by rtl_433 should work just fine.  Also, any sensor you can get data from and into influxDB is easy.  It took me 20 minutes to write code to get the Dracal barometer to work.
