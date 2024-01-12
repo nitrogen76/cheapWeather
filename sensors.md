@@ -20,4 +20,4 @@ GMC 320 geiger counter from GQ  (Not via rtl433)
 There are custom firmwares that will allow you to scrape directly.  Also, MQTT is on the roadmap for newer sensors.
 
 
-Any sensor that is powered by rtl_433 should work just fine.  Also, any sensor you can get data from and into influxDB is easy.  It took me 20 minutes to write code to get the Dracal barometer to work.
+Any sensor that is powered by rtl_433 should work just fine.  Also, any sensor you can get data from and into influxDB is easy.  It took me 20 minutes to set up [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) to ingest the data from AirGradient's API.
