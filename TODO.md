@@ -6,6 +6,7 @@
 * Better quality scripts than the initial stabs.  Scripts need error checking, and debug
 * Better queries for lightning sensor.  (Distance should be null if there
   have been no strikes for the timefilter.)
+* Work with rtl_433 crew to get the lux and UV meter readings useful
 
 * Clean up the code so it's ~~not~~ less embarrassing garbage.
 * See about an easy way to switch between Freedom Units and SI units.  All backend values are in SI units, to make computation easier, but it's a bit of a hack right now to get all the output in Freedom Units.  IT should be easily switchable instead of modifying each query.  
