@@ -2,7 +2,7 @@ Sensors I use or have used:
 
 [Acurite 5n1 weather station](https://www.acurite.com/learn/installation/5in1). The temp sensor on this weather station is garbage.  Use one of the other sensors in a solar-shielded housing.  There's an [PRO+ sensor upgrade](https://www.amazon.com/gp/product/B00T0K8MJW/) that makes the temperature swings a bit less pronounced, but I still recommend one of the other Accurite or LaCrosse sensors as an addition to temperature monitoring.
 
-[Ecowitt WS68](https://shop.ecowitt.com/products/ws68). This is a MUCH BETTER wind sensor than the Acurite 5n1.  IT lacks temperature, humidity, and rain, but the wind direction sensor works better.  It also has a Lux/UV meter but rtl_433's support for it is lacking at the moment.  (We're working on that, though.)  Even though the sensor says it does not work alone, you can use it via rtl_433 without any other equipment.
+[Ecowitt WS68](https://shop.ecowitt.com/products/ws68). This is a MUCH BETTER wind sensor than the Acurite 5n1.  IT lacks temperature, humidity, and rain, but the wind direction sensor works better.  It also has a Lux/UV meter but rtl_433's support for it is lacking at the moment.  (We're working on that, though.)  Even though the sensor says it does not work alone, you can use it via rtl_433 without any other equipment.  Currently, you'll need to hack the rtl_433 code a bit to make the WS68 useful if you have other reporting sensors, as it was unclear what units it was using when the code was written.  Hopefully that will be fixed soon.
 
 [Acurite 6045M Lightning Sensor](https://www.acurite.com/lightning-detector-with-temperature-and-humidity.html) Get this [Solar Shield](https://www.amazon.com/gp/product/B01M64ISDE/) for it, it's a better temp sensor than the 5n1
 
