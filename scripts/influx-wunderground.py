@@ -113,6 +113,10 @@ BBB=float(baroINHG)
 
 dewPoint=weathermath.get_dew_point_c(tempC,humidityPF)
 heatIndex=heatindex.from_celsius(tempC,humidityPF)
+# Heat index doesn't do the right thing if the temp is too low
+## so if it's below 80º f, then there isn't any heat index...
+if tempC <= 26:
+    heatIndex=float(tempC)
 
 dewPointFlo=((dewPoint)* 1.8000 + 32.00)
 heatIndexFlo=((heatIndex)* 1.8000 + 32.00)
