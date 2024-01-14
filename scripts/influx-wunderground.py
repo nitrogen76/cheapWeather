@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 ##
 ## Influx to Wunderground
+## Also calculates other things, even if you don't use wunderground
 ##
 ##
 
