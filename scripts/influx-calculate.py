@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 ##
 ## Influx to Wunderground
-## Also calculates other things, even if you don't use wunderground
 ##
 ##
 
@@ -10,6 +9,10 @@ import configparser
 import argparse
 import requests
 import re
+import math
+import time
+import subprocess
+import sys
 import metpy.calc as mpcalc
 from metpy.units import units
 from influxdb import InfluxDBClient
@@ -28,7 +31,6 @@ if DEBUG==True:
 # Get config info
 config = configparser.ConfigParser()
 config.read('/local/leo/cheapWeather/cheapWeather.ini')
-
 ### Variables
 softwareVersion='&softwaretype=cheapWeather%20version%20swullock'
 
@@ -44,9 +46,17 @@ influxPass=config.get('Influx','password')
 influxDB=config.get('Influx','database')
 influxHost=config.get('Influx','host')
 thermometer=config.get('Query','thermometer')
-station=config.get('Query','station')
+humidityStation=config.get('Query','humiditystation')
 windStation=config.get('Query','windstation')
 baroStation=config.get('Query','barostation')
+useDracal=config.get('Baro','useDracal')
+dracalPath=config.get('Baro','dracalPath')
+dracalSwitches=config.get('Baro','dracalSwitches')
+useSensehat=config.get('Baro','useSenseHat')
+Altitude=config.get('Baro','myAltitude')
+Altitude=float(Altitude)
+useWunderground=config.get('Wunderground','useWunderground')
+
 
 tempQueryC='SELECT last("temperature_C") FROM '
 humidityQuery='SELECT last("humidity")   FROM '
@@ -55,8 +65,25 @@ winddirQuery='SELECT last("wind_dir_deg") FROM '
 windgustQuery='SELECT top("wind_avg_km_h", 1) FROM '
 gustTime='WHERE time > now() - 15m'
 baroQuery='SELECT last("Barometer") FROM '
+           
+if DEBUG==True:
+   print("DEBUG: Configuration options passed from cheapWeather.ini")
+   print(       "useSensehat= ", useSensehat)
+   print(       "Altitude= ", Altitude)
+   print(       "useDracal= ", useDracal)
+   print(       "dracalSwitches= ", dracalSwitches)
+   print(       "dracalPath= ", dracalPath)
+   print(       "influx Userid= ", influxUser)
+   print(       "influx database= ", influxDB)
+   print(       "influx host= ", influxHost)
+   print(       "useWunderground= ", useWunderground)
+   print(       "wunderground user= ", wundergroundUser)
+   print(       "thermometer= ", thermometer)
+   print(       "humidity station= ", humidityStation)
+   print(       "wind station= ", windStation)
+   print(       "baro station= ", baroStation)
 
-if useWunder==True:
+if useWunder==True or useWunderground==1:
    WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
    WUcreds = "ID=" + wundergroundUser + "&PASSWORD="+ wundergroundPass
 
@@ -65,8 +92,61 @@ if useWunder==True:
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
 
+## Move barometer.py into this
+if useSensehat == "1":
+    if DEBUG == True:
+       print("useSensehat is triggered "+useSensehat)
+    sense = SenseHat()
+    #Convert to inHG
+    pressure = (sense.get_pressure()*0.029529983071445)
+    #Convert to Mean Sea Level Pressure
+    baroX=pressure/pow(1-((Altitude)/44330.0),5.255)
+    baro=round((baroX),4)
+    if DEBUG==True:
+      print( baro)
+    baroJSON = [{"measurement":"SenseHat",
+
+        "fields":
+        {
+        "Barometer":(baro)
+        }
+        },
+        ]
+
+    #print(baroJSON)
+    client.write_points(baroJSON)
+else:
+    if DEBUG==True:
+       print("no Sensehat")
+       print("useDracal is: " + useDracal)
+if useDracal == "1":
+    #run usbtenkiget to get the barometer reading with 19 decimals of precision
+    result=subprocess.run([(dracalPath),(dracalSwitches), "-x6" ], capture_output=True)
+    dracalBaro=(result.stdout).strip()
+    dracalBaroFloat=float(dracalBaro)
+    if DEBUG==True:
+       print (dracalBaroFloat)
+    #This sensor has a temp sensor, lets grab that data also, why not?
+    temp=subprocess.run([(dracalPath),(dracalSwitches), "-x6","-i1" ], capture_output=True)
+    dracalTemp=(temp.stdout)
+    dracalTempFloat=float(dracalTemp)
+    dracalBaroSL=dracalBaroFloat/pow(1-((Altitude)/44330.0),5.255)
+    if DEBUG==True:
+       print(dracalBaroSL)
+    baroJSON = [{"measurement":"Dracal",
+        "fields":
+        {
+        "Barometer":(dracalBaroSL),
+        "Thermometer":(dracalTempFloat),
+        "UnCorrectedBarometer":(dracalBaroFloat)
+        }
+        }
+        ]
+
+    client.write_points(baroJSON)
+
 # get last temp C
-tmpC=client.query(tempQueryC + station)
+tmpC=client.query(tempQueryC + thermometer)
 tmpString=str(tmpC)
 tmpSliced=tmpString.split(':')[5]
 tempC=tmpSliced.split('}')[0]
@@ -75,13 +155,12 @@ tempC=float(tempC)
 tempPint=(tempC * units.degC)
 
 ## Get last humidity
-tmp=client.query(humidityQuery + station)
+tmp=client.query(humidityQuery + humidityStation)
 tmpString=str(tmp)
 tmpSliced=tmpString.split(':')[5]
 humidityP=tmpSliced.split('}')[0]
 humidityP=humidityP.strip()
 humidityPF=float(humidityP)
-##print ("humidityPercent= ",humidityPF)
 humidityPint=(humidityPF * units.percent)
 
 ## Get last windspeed
@@ -130,6 +209,7 @@ if tempPint.magnitude <= 25:
    heatindexPint = tempPint
    if DEBUG==True:
        print ("DEBUG: temp value too low to generate a heat index")
+       print (heatindexPint, tempPint)
 ## if temp is above what makes sense for windchill, set it to the temp.
 if tempPint.magnitude >= 10:
     windchillPint = tempPint
@@ -199,6 +279,7 @@ if DEBUG==True:
     print ("     heatIndexJSON: ",heatIndexJSON)
     print ("     Wet Bulb JSON: ",WBTIndexJSON)
     print ("     Windchill JSON: ",windchillJSON)
+    print ("     Barometer JSON: ",baroJSON)
 ## hack hack bad code alert
 
 if useWunder==True:
