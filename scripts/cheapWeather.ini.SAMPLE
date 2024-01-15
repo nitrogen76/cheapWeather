@@ -1,5 +1,6 @@
 [Baro]
 useSensehat=1
+## needed for barometer correction
 myAltitude=140
 # In meters
 ## For Dracal Precision instruments
@@ -16,10 +17,16 @@ host=
 port=8086
 
 [Wunderground]
+## Set to zero if you don't want to use wunderground
+useWunderground=1
+
+## Leave blank if you don't want to use wunderground
 user=
 password=
 
 [Query]
+# Set these to the influx measurement you want to use for each. Must exist to calculate
+# other values
 thermometer="Acurite-5n1"
 humiditystation="Acurite-5n1"
 windstation="Acurite-5n1"
