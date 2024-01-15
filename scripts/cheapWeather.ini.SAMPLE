@@ -21,6 +21,6 @@ password=
 
 [Query]
 thermometer="Acurite-5n1"
-station="Acurite-5n1"
+humiditystation="Acurite-5n1"
 windstation="Acurite-5n1"
 barostation="Dracal"
