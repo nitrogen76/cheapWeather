@@ -1,6 +1,6 @@
 * ~~Post dashboards with variables to choose different measurements~~
 * ~~Better query for dewpoints with the real math.  This will be easier with Flux.~~
-*   This was done instead in the calculate.py script, which uses metpy, which is better.
+  * This was done instead in the calculate.py script, which uses metpy, which is better.
 * ~~write a better script for wunderground exports~~
 *   Crappy python3 script replaces crappy shell script.
 * ~~Figure out a good way to make custom combinations of sensors for a panel with variables, etc.~~
