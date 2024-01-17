@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+## radiation grabber for influx v2
 ## pip install gmc
 ## will get the module you need.
 
