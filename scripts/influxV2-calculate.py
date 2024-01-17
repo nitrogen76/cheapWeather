@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ##
-## Influx to Wunderground
+## Influx to Wunderground influx v2
 ##
 ##
 
