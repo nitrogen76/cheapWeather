@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+## Script to pull information from Bryant AC from
+## https://github.com/nebulous/infinitude
+
 import configparser
 import json
 import requests
