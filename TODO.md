@@ -9,7 +9,7 @@
 * ~~Implement [Python pints](https://pypi.org/project/Pint/) for better tracking of units~~
 * ~~Modify wunderground script to disable dewpoint calculation or wunderground uploads (or fix dewpoint queries)~~
   * You can set this in the commandline or in the cheapWeather.ini file 
-
+* ~~finally worked out some influx v2 setups for the scripts.  Need to make it prettier, but i got v2 running finally.  The FLUX query langage is INSANE so i'm still using v1 api mode for now on the graphs~~
 
 * Better way to calculate dewpoints than doing in code every minute
 * Better quality scripts than the initial stabs.  Scripts need error checking, and debug
