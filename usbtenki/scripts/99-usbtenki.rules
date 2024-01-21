@@ -1,0 +1,17 @@
+## Add this to your /etc/udev/rules.d or equivilent if you have
+## A Dracal usb barometer.
+## Use the same group (Probably rtlsdr) that allows your 
+## software defined radio to work via usb without root perms.
+
+ATTR{idVendor}=="1781", ATTR{idProduct}=="0a98", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0500", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0501", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0502", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0503", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0504", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0505", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0506", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0507", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0508", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0509", MODE="0664", GROUP="rtlsdr"
+ATTR{idVendor}=="289b", ATTR{idProduct}=="0510", MODE="0664", GROUP="rtlsdr"
