@@ -1,0 +1,380 @@
+pywws - Python software for USB Wireless Weather Stations
+http://github.com/jim-easterbrook/pywws
+Copyright (C) 2008-22  pywws contributors
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+Changes in v22.10.0:
+    1/ Reduced incidence of CWOP service timeout errors.
+
+Changes in v22.9.0:
+    1/ Reject data if 'pointer' value is invalid due to failing hardware.
+    2/ Updated Weather Underground uploader documentation.
+
+Changes in v22.3.0:
+    1/ Replace pytz with dateutil.tz.
+    2/ Fix some hidapi USB problems.
+    3/ Correct some typos in documentation.
+
+Changes in v21.4.0:
+    1/ Fixed problems with timezones ready for next release of tzlocal.
+    2/ Fixed rare problem with 'saved_date' being 'None'.
+
+Changes in v21.3.0:
+    1/ Added -d option to pywws-setweatherstation. This is useful if your
+       station sets loads of alarms after a reset.
+    2/ Updated pywws.timezone to cope with changes in Python 3.6.
+    3/ Various bug fixes and minor improvements.
+
+Changes in v20.1.0:
+    1/ Added a "Windy" service uploader module.
+    2/ Various bug fixes and minor improvements.
+
+Changes in v19.7.1:
+    1/ Fix file data iteration bug introduced in v19.7.0.
+
+Changes in v19.7.0:
+    1/ Update default template_txt for service.mqtt to provide wider range of
+       values out of the box. The published format is not backwards compatible,
+       but this only affects new users.
+    2/ Improved reliability with "solar" stations when lost contact with solar
+       sensors.
+    3/ Some file data errors should now be detected and a log message sent.
+
+Changes in v19.4.0:
+    1/ Can optionally use SQLite3 data store instead of CSV files.
+    2/ Improve weathercloud service uploader.
+    3/ Cope slightly better with stations that aren't logging data.
+
+Changes in v18.10.1:
+    1/ Fix bug when running a service directly (in Python 2 only) introduced
+       in v18.9.0.
+
+Changes in v18.10.0:
+    1/ Fix template loop bug (in Python 2 only) introduced in v18.9.0.
+
+Changes in v18.9.0:
+    1/ Major changes to ftp uploads. New ftp/sftp/copy services do the
+       uploading. pywws should make the required changes to weather.ini
+       automatically, but users should check after running v18.9.0 for the
+       first time.
+    2/ New services to post to Mastodon and WeatherCloud.
+    3/ MQTT service can now use TLS.
+    4/ Various bug fixes and minor improvements.
+
+Changes in v18.6.3:
+    1/ Restore Python source text encoding comments needed by some Python 2
+       versions.
+    2/ Add example AWS uploader module from Chris Ramsay.
+
+Changes in v18.6.2:
+    1/ Fix duplicate data bug in live logging.
+
+Changes in v18.6.1:
+    1/ Fix bug in "fixed block" date parsing.
+
+Changes in v18.6.0:
+    1/ Substantial rewrite of much of pywws. It is now more "standard" in many
+       ways, such as names of modules, and is compatible with Python 2.7 and 3.
+    2/ New "service" uploaders. "underground_rf" and "cwop_ham" have been
+       merged in to "underground" and "cwop".
+    3/ "Day end hour" can now vary with daylight savings time.
+    4/ Improved reliability with "3080" class stations.
+    5/ Various other bug fixes and minor improvements.
+
+Changes in v18.04.1:
+    1/ Fix bug in utc <-> local time conversions.
+
+Changes in v18.04.0:
+    1/ Now works with broken weather stations that have stopped logging data.
+       (Although there may be more gaps in the data.)
+    2/ Cope better with missing wind direction data.
+    3/ Use HTTPS for Weather Underground uploads.
+    4/ Other minor bug fixes.
+
+Changes in v17.11.0:
+    1/ Allow MQTT service without password.
+    2/ Allow SFTP uploads with public key.
+    3/ Increase Twitter character limit from 140 to 280.
+    4/ Various other bug fixes and minor improvements.
+
+Changes in v16.12.0:
+    1/ Added "candlestick" plot type.
+    2/ Added cloud base calculation function.
+    3/ Various other bug fixes and minor improvements.
+
+Changes in v16.08.0:
+    1/ Fix Python 2.5 incompatibilities.
+    2/ Fix python-twitter v3 tweet length problem.
+
+Changes in v16.07.1:
+    1/ Further changes to handle UK Met Office server quirks.
+
+Changes in v16.07.0:
+    1/ Fix bug with UK Met Office uploads server change.
+    2/ Allow user commands in wind roses.
+    3/ Various other bug fixes and minor improvements.
+
+Changes in v15.12.0:
+    1/ Fix bug with Twitter messages being excessively truncated.
+    2/ Improve handling of utf-8 encoded templates.
+    3/ Improved plots and wind roses with 'pngcairo' "terminal".
+    4/ Various bug fixes and minor improvements.
+
+Changes in v15.11.0:
+    1/ Add Russian translation of program text.
+    2/ Improved documentation.
+    3/ Various bug fixes and minor improvements.
+
+Changes in v15.07.0:
+    1/ Can include multiple media in Twitter messages.
+    2/ Attempt to fix bug in wind rose axes labels.
+    3/ Enable inclusion of time & date in wind rose title.
+    4/ Various bug fixes and minor improvements.
+
+Changes in v15.01.0:
+    1/ Added 'MQTT' service.
+    2/ Added another USB library option.
+    3/ Improved Python 3 compatibility.
+    4/ Various bug fixes and minor improvements.
+
+Changes in v14.12.0:
+    1/ Updated temperatur.nu and wetterarchiv.de service details to suit new
+       APIs.
+
+Changes in v14.06.1:
+    1/ Revised version numbering scheme.
+    2/ Compiled documentation no longer included in releases.
+    3/ Can partially specify start & stop date/time in graphs, e.g. to start a
+       plot at midnight, no matter when it is plotted.
+
+Changes in v14.06:
+    1/ Can now send images to Twitter.
+    2/ Periodic tasks can be specified with a cron style syntax.
+    3/ Added wind direction filter for use in graphs or user calibration
+       modules.
+    4/ Wind direction is now stored as a float. Old templates that use the
+       wind_dir_text array will need updating, probably to use the
+       winddir_text() function.
+    5/ Started using "Transifex" to host translations. Changed tools and
+       procedures to create new translations.
+    6/ Improved USB hangup avoidance strategy for stations with large clock
+       drift figures.
+    7/ Various bug fixes and minor improvements.
+
+Changes in v14.05:
+    1/ Rearranged package layout, moving examples and documentation.
+    2/ Added 'entry point' auto-generated commands for some modules.
+    3/ Added verbose output option to pywws-version command.
+    4/ Various bug fixes and minor improvements.
+
+Changes in v14.03:
+    1/ Extracts additional status from 'wind_dir' byte. You must run
+       pywws-reprocess.py with the -u option after upgrading from any previous
+       version.
+    2/ Added Citizen Weather Observer Program to available 'services'.
+    3/ Improved asynchronous upload task queuing.
+    4/ Various bug fixes and minor improvements.
+
+Changes in v14.02:
+    1/ Improved time zone handling, including non whole hour time zones.
+    2/ New 'frequent writes' config option.
+    3/ Improved 'live log' sync, particularly with 3080 type stations.
+    4/ Record recent memory pointer to improve detection of gaps in data.
+    5/ Various bug fixes and minor improvements.
+
+Changes in v13.12:
+    1/ Changed API of user calibration module.
+    2/ Can use python-twitter *or* tweepy library.
+    3/ Added a script to run live logging as a UNIX daemon process.
+    4/ Changed data store to use separate read and write caches.
+    5/ Various bug fixes and minor improvements.
+
+Changes in v13.10:
+    1/ Changed Twitter library from tweepy to python-twitter.
+    2/ Added ability to do uploads asynchronously.
+    3/ Rearranged and improved documentation.
+    4/ Various bug fixes and minor improvements.
+
+Changes in v13.06:
+    1/ Substantially rearranged directories, getting rid of 'code' and 'code3'.
+    2/ Removed 'makefile' - everything is now done via 'setup.py'.
+    3/ Removed 'RunModule.py' - use 'python -m pywws.module' now.
+    4/ Separated storage of config (weather.ini) and status (status.ini).
+    5/ Replaced toservice.py "rapid fire" mode with a separate config file for
+       Weather Underground rapid fire.
+    6/ Added 2 more low-level USB access modules.
+    7/ Various bug fixes and minor improvements.
+
+Changes in v13.03:
+    1/ Added 'rain days' to monthly data. (Reprocess required when upgrading.)
+    2/ Extended template syntax to include comments.
+    3/ Added 'humidity index' function.
+    4/ Added French translation of documentation.
+    5/ Reduced frequency of saving data files.
+    6/ Various bug fixes.
+
+Changes in v12.12:
+    1/ Added support for Python 3.
+    2/ Added French documentation translation.
+    3/ Used 'binary search' to speed up data access.
+    4/ Various bug fixes.
+
+Changes in v12.11:
+    1/ Moved development from Google code to GitHub.
+    2/ Made software attempt to avoid USB activity at times when it is assumed
+       the weather station might be writing to its memory. This might solve
+       the USB lockup problem, but it's too early to tell.
+
+Changes in v12.10:
+    1/ Added a 'winddir_text' function for use in templates.
+    2/ Added <ytics> and <y2tics> options to graph plots.
+    3/ Various bug fixes.
+
+Changes in v12.07:
+    1/ Added Open Weather Map to the services.
+    2/ Fixed problem with Weather Underground uploads that started on 1st June.
+    3/ Various bug fixes and software structure improvements.
+
+Changes in v12.05:
+    1/ Made 'fixed block' data available to template calculations.
+    2/ Fixed buggy auto-detection of 3080 weather stations.
+    3/ Added a function to generate the Zambretti forecast code letter.
+    4/ Added a program to test USB communication reliablility.
+    5/ Various bug fixes and software structure improvements.
+
+Changes in v12.02:
+    1/ Separated out low level USB communications to enable use of different
+       libraries. Now works on recent versions of Mac OS.
+    2/ Added humidity, pressure & wind data to summary data.
+    3/ Merged Weather Underground and UK Met Office uploaders into one combined
+       module. Added more 'service' uploaders.
+    4/ Various bug fixes and software structure improvements.
+
+Changes in v11.10:
+    1/ Complete restructuring of documentation.
+    2/ Added a user defined 'calibration' process.
+    3/ Sets 'locale' according to language setting.
+    4/ Added ability to upload to UK Met Office 'WOW'.
+    5/ Various bug fixes and software structure improvements.
+    6/ New language files: French, Danish.
+
+Changes in v11.05:
+    1/ Added support for '3080' family stations that have illuminance and
+       UV sensors.
+    2/ Broadened the range of tasks that can be done with 'live' data.
+    3/ Various bug fixes and software structure improvements.
+
+Changes in v11.02:
+    1/ Various bug fixes and software structure improvements.
+    2/ Improved wind direction averaging.
+    3/ Added conversion functions for common things such as C to F.
+    4/ Added a YoWindow module.
+    5/ Improved Zambretti forecaster.
+
+Changes in v10.12:
+    1/ Various bug fixes and software structure improvements.
+    2/ Added a 'goto' instruction to Template.py.
+    3/ Added a 'Zambretti' forecast function to Template.py. This should
+       be treated as an experiment, and not relied upon for accuracy.
+
+Changes in v10.10:
+    1/ Added 'catchup' mode to ToUnderground.py.
+    2/ Created 'Tasks.py' to handle common tasks.
+    3/ Made better use of Python's logger for info and error
+       messages.
+    4/ Changed over from 'python-twitter' to 'tweepy' for Twitter
+       access. Twitter authorisation using OAuth now works.
+    5/ Added 'LiveLog.py' live logging program.
+    6/ Added 'SetWeatherStation.py' to do some configuration of weather
+       station. No longer need EasyWeather to set logging interval!
+    7/ Added 'Rapid Fire' ability to ToUnderground.py.
+    8/ Added plain text versions of HTML documentation.
+    9/ Many bug fixes and minor improvements.
+
+Changes in v10.08:
+    1/ Added internal temperature to daily and monthly summaries.
+       Run Reprocess.py when upgrading from earlier versions.
+    2/ Added 'prevdata' to Template.py. Allows calculations that
+       compare values from different times.
+    3/ Made 'pressure_offset' available to calculations in Plot.py
+       and Template.py. This is only useful when using 'raw' data.
+    4/ Improved synchronisation to weather station's clock when
+       fetching stored data.
+
+Changes in v10.06:
+    1/ Improved localisation code.
+    2/ Minor bug fixes.
+    3/ Added Y axis label angle control to plots.
+
+Changes in v10.04:
+    1/ Changed version numbering to year.month.
+    2/ Allowed "upload" to a local directory instead of ftp site.
+    3/ Added "calc" option to text templates (Template.py).
+    4/ Added -v / --verbose option to Hourly.py to allow silent operation.
+    5/ Added internationalisation / localisation of some strings.
+    6/ Made 'raw' data available to text templates.
+    7/ Added ability to upload to Weather Underground.
+    8/ Added dual axis and cumulative graph capability.
+
+Changes in v0.9:
+    1/ Added lowest daytime max and highest nighttime min temperatures
+       to monthly data.
+    2/ Added average temperature to daily and monthly data.
+    3/ Added 'terminal' element to Plot.py templates for greater control
+       over output appearance.
+    4/ Added 'command' element to Plot.py templates for even more
+       control, for advanced users.
+    5/ Added secure upload option.
+    6/ Minor speed improvements.
+
+Changes in v0.8:
+    1/ Added meteorological day end hour user preference
+    2/ Attempts at Windows compatibility
+    3/ Corrected decoding of wind data at speeds over 25.5 m/s
+    4/ Improved speed with new data caching strategy
+
+Changes in v0.7:
+    1/ Several bug fixes, mostly around new weather stations with not
+       much data
+    2/ Added min & max temperature extremes to monthly data
+    3/ Added template and workspace directory locations to weather.ini
+    4/ Increased versatility of Plot.py with layout and title elements
+
+Changes in v0.6:
+    1/ Added monthly data
+    2/ Changed 'pressure' to 'abs_pressure' or 'rel_pressure'
+
+Changes in v0.5:
+    1/ Small bug fixes.
+    2/ Added start time to daily data
+    3/ Replaced individual plot programs with XML "recipe" system
+
+Changes in v0.4:
+    1/ Can post brief messages to Twitter.
+    2/ Now time zone aware. Uses UTC for data indexing and local time
+       for graphs and text data files.
+
+Changes in v0.3:
+    1/ Now uses templates to generate text data
+    2/ Added 28 day plot
+    3/ Minor efficiency improvements
+    4/ Improved documentation
+
+Changes in v0.2:
+    1/ Now uses Python csv library to read and write data
+    2/ Creates hourly and daily summary files
+    3/ Includes rain data in graphs
+

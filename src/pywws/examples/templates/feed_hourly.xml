@@ -1,0 +1,47 @@
+#! pywws - Python software for USB Wireless Weather Stations                       #
+#! http://github.com/jim-easterbrook/pywws                                         #
+#! Copyright (C) 2008-13  Jim Easterbrook  jim@jim-easterbrook.me.uk               #
+#!                                                                                 #
+#! This program is free software; you can redistribute it and/or                   #
+#! modify it under the terms of the GNU General Public License                     #
+#! as published by the Free Software Foundation; either version 2                  #
+#! of the License, or (at your option) any later version.                          #
+#!                                                                                 #
+#! This program is distributed in the hope that it will be useful,                 #
+#! but WITHOUT ANY WARRANTY; without even the implied warranty of                  #
+#! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                   #
+#! GNU General Public License for more details.                                    #
+#!                                                                                 #
+#! You should have received a copy of the GNU General Public License               #
+#! along with this program; if not, write to the Free Software                     #
+#! Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. #
+#timezone local#
+#roundtime True#
+#hourly#
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos##">
+  <channel>
+    <title>Stoneleigh Weather - Hourly Reports</title>
+    <link>http://www.jim-easterbrook.me.uk/weather/</link>
+    <atom:link href="http://www.jim-easterbrook.me.uk/weather/data/feed_hourly.xml" rel="self" type="application/rss+xml" />
+    <description>Hourly reports from an amateur weather station in Stoneleigh, Surrey, UK</description>
+    <ttl>60</ttl>
+    <item>
+      <title>#idx "%A %H:%M %Z"#</title>
+      <geo:lat>51.36</geo:lat>
+      <geo:long>-.25</geo:long>
+      <link>http://www.jim-easterbrook.me.uk/weather/24hrs/</link>
+      <description>Temperature: #temp_out "%.1f°C" "-"#
+, Wind: #wind_dir "%s, " "" "winddir_text(x)"#
+#wind_ave "%.0f mph (ave), " "" "wind_mph(x)"#
+#wind_gust "%.0f mph (gust)" "" "wind_mph(x)"#
+, Humidity: #hum_out "%d%%"#
+, Rainfall (hourly) #rain "%.1f mm"#
+, Pressure: #rel_pressure "%.0f hPa, "#
+#pressure_trend "%s" "" "pressure_trend_text(x)"#</description>
+      <guid isPermaLink="false">#idx "hourly_%Y_%m_%d_%H_%M_%Z"#</guid>
+#roundtime False#
+      <pubDate>#idx "%a, %d %b %Y %H:%M:%S %z"#</pubDate>
+    </item>
+  </channel>
+</rss>
