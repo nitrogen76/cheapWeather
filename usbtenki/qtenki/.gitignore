@@ -1,8 +1,0 @@
-moc_*.cpp
-Makefile
-Makefile.Release
-Makefile.Debug
-release/
-debug/
-object_script.*
-qtenki
