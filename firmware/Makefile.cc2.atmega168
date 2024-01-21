@@ -1,0 +1,90 @@
+CC=avr-gcc
+AS=$(CC)
+LD=$(CC)
+
+PROGNAME=cc2.m168
+CPU=atmega168
+CFLAGS=-Wall -mmcu=$(CPU) -DF_CPU=12000000UL -Os -I../common -I. -Iusbdrv
+LDFLAGS=-mmcu=$(CPU) -Wl,-Map=$(PROGNAME).map
+HEXFILE=$(PROGNAME).hex
+AVRDUDE=avrdude
+AVRDUDE_CPU=m168
+
+OBJS=usbdrv/usbdrv.o usbdrv/usbdrvasm.o serno.o i2c.o main.o eeprom.o adc.o chipcap2.o interface_cc2.o
+
+all: $(HEXFILE)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.c %.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.S
+	$(CC) $(CFLAGS) -x assembler-with-cpp -c $< -o $@
+
+clean:
+	rm -f $(PROGNAME).elf $(PROGNAME).map $(OBJS)
+
+$(PROGNAME).elf: $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+%.hex: %.elf
+	rm -f $@
+	avr-objcopy -j .text -j .data -O ihex $< $@
+	./checksize $<
+
+#
+# Extended byte: 0xF9
+#
+EFUSE=0x01
+
+#
+# Low fuse byte
+#
+# CKDIV8	CKOUT	SUT1	SUT0	CKSEL[4]
+#   1         1      1       0
+#
+LFUSE=0xD7
+
+# High fuse byte
+#
+# RSTDISBL	DWEN	SPIEN	WDTON	EESAVE	BODLEVEL[3]
+#   1        1         0      1       1         100
+#
+# BOD level = 4.1 to 4.5 volt
+HFUSE=0xDC
+
+#
+# FUSE low byte
+#
+# 7: BODLEVEL -> 0  (Reset threshold: 3.7 ~ 4.5)
+# 6: BODEN    -> 0  (Enabled)
+# 5: SUT1     -> 0
+# 4: SUT2     -> 1
+# 3: CKSEL3   -> 1
+# 2: CKSEL2   -> 1
+# 1: CKSEL1   -> 1
+# 0: CKSEL0   -> 1
+#
+# FUSE high byte
+#
+# 7: RSTDISBL -> 1
+# 6: WDTON    -> 1
+# 5: SPIEN    -> 0
+# 4: CKOPT    -> 1
+# 3: EESAVE   -> 1
+# 2: BOOTSZ1  -> 0
+# 1: BOOTSZ0  -> 0
+# 0: BOOTRST  -> 1
+#
+
+fuse:
+	$(AVRDUDE) -p $(AVRDUDE_CPU) -P usb -c avrispmkII -Uefuse:w:$(EFUSE):m -Uhfuse:w:$(HFUSE):m -Ulfuse:w:$(LFUSE):m -B 20.0 -F
+
+flash: $(HEXFILE)
+	$(AVRDUDE) -p $(AVRDUDE_CPU) -P usb -c avrispmkII -Uflash:w:$(HEXFILE) -B 1.0 -F
+
+reset:
+	$(AVRDUDE) -p $(AVRDUDE_CPU) -P usb -c avrispmkII -B 1.0 -F
+

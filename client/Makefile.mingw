@@ -1,0 +1,35 @@
+CC=gcc
+LD=$(CC)
+
+CFLAGS=-Wall -g -O -I../common -I../library -DWINDOWS_VERSION -I../../libusb/include
+LDFLAGS=-lusb -lm -L../../libusb/lib/gcc
+
+PREFIX=/usr/local
+
+PROGS=usbtenkiget usbtenkiset
+
+.PHONY : clean install
+
+all: usbtenkiget usbtenkiset
+
+usbtenkiget: usbtenki.o main.o timestamp.o convertRaw.o
+	$(LD) $^ -o $@ $(LDFLAGS)
+	
+usbtenkiset: usbtenki.o usbtenkiset.o convertRaw.o
+	$(LD) $^ -o $@ $(LDFLAGS)
+
+%.o: %.c %.h
+	$(CC) $(CFLAGS) -c $<
+
+convertRaw.o: ../library/convertRaw.c 
+	$(CC) $(CFLAGS) -c $< -o convertRaw.o
+
+usbtenki.o: ../library/usbtenki.c 
+	$(CC) $(CFLAGS) -c $< -o usbtenki.o
+
+clean:
+	rm -f *.o $(PROGS)
+
+install:
+	@echo "Install not done yet. Sorry"
+

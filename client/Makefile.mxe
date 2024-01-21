@@ -1,0 +1,36 @@
+CC=i686-w64-mingw32.static-gcc
+LD=$(CC)
+
+LIBUSB_DIR=../../libusb-win32-device-bin-0.1.12.2
+
+CFLAGS=-Wall -g -O -I../common -I../library -I$(LIBUSB_DIR)/include -DUSE_OLD_LIBUSB
+LDFLAGS=-L$(LIBUSB_DIR)/lib/gcc -lusb -lm
+
+USBTENKI_OBJS=usbtenki.o convertRaw.o convert_type_k.o
+
+PROGS=usbtenkiget.exe usbtenkiset.exe
+
+vpath %.c ../library
+vpath %.h ../library
+
+.PHONY : clean
+
+all: $(PROGS)
+
+usbtenkiget.exe: $(USBTENKI_OBJS) main.o timestamp.o
+	$(LD) $^ -o $@ $(LDFLAGS)
+	
+usbtenkiset.exe: $(USBTENKI_OBJS) usbtenkiset.o
+	$(LD) $^ -o $@ $(LDFLAGS)
+
+%.o: %.c %.h
+	$(CC) $(CFLAGS) -c $<
+
+convertRaw.o: ../library/convertRaw.c
+	$(CC) $(CFLAGS) -c $< -o convertRaw.o
+
+usbtenki.o: ../library/usbtenki.c
+	$(CC) $(CFLAGS) -c $< -o usbtenki.o
+
+clean:
+	rm -f *.o $(PROGS)
