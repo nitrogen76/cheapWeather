@@ -171,6 +171,4 @@ CJG and MG for inspiring me with their RTL-SDR security demos, showing me how ea
 
 Hailey Bannister and CJG for helping me learn python.
 
-Dewpoint Calculation snipped from Weather_math.py function: [gist.github.com/sourceperl/](https://gist.github.com/sourceperl/45587ea99ff123745428)
-
-Heat Index Calculator snipped from [github.com/myleshk/heat_index_calculator](https://github.com/myleshk/heat_index_calculator)
+[Wunderground API](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
