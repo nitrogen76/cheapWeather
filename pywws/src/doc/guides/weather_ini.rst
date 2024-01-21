@@ -1,0 +1,318 @@
+.. pywws - Python software for USB Wireless Weather Stations
+   http://github.com/jim-easterbrook/pywws
+   Copyright (C) 2008-18  pywws contributors
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+weather.ini - configuration file format
+=======================================
+
+Nearly all configuration of pywws is via a single file in the data
+directory: weather.ini. This file has a structure similar to that of
+Microsoft Windows INI files. It is divided into "sections", each of which
+has a number of "name = value" entries. The order in which sections appear
+is not important.
+
+Any plain text editor can be used to do edit the file.
+(Don't try to edit it while any other pywws software is running.)
+In many cases pywws will initialise the entries to sensible values.
+
+Another file, status.ini, is used to store some information that pywws uses internally.
+It is described at the end of this document.
+In normal use you should not need to edit it.
+
+The following sections are currently in use:
+
+  * config: miscellaneous system configuration.
+  * paths: directories in which templates etc. are stored.
+  * live: tasks to be done every 48 seconds.
+  * logged: tasks to be done every time the station logs a data record.
+  * cron: tasks to be done at a particular time or date.
+  * hourly: tasks to be done every hour.
+  * 12 hourly: tasks to be done every 12 hours.
+  * daily: tasks to be done every day.
+  * ftp: configuration of uploading to a website.
+  * underground, metoffice, temperaturnu etc: configuration of posting to 'services'.
+
+.. _weather_ini-config:
+
+config: miscellaneous system configuration
+------------------------------------------
+::
+
+ [config]
+ ws type = 1080
+ day end hour = 9, False
+ pressure offset = 9.4
+ gnuplot encoding = utf8
+ template encoding = iso-8859-1
+ language = en_GB
+ logdata sync = 1
+ rain day threshold = 0.2
+ usb activity margin = 3.0
+ gnuplot version = 4.6
+ frequent writes = False
+
+``ws type`` is the "class" of weather station. It should be set to ``1080`` for most weather stations, or ``3080`` if your station console displays solar illuminance.
+ 
+``day end hour`` is the end of the "`meteorological day <http://en.wikipedia.org/wiki/Meteorological_day>`_", in local time, and whether daylight savings time should be applied.
+Typical values are ``9, False`` (UK Met Office standard) or ``0, True`` (midnight, summer and winter).
+Note that using daylight savings time will mean that one day a year is 25 hours long and one is 23 hours long.
+You must update all your stored data by running :py:mod:`pywws.reprocess` after you change this value.
+
+``pressure offset`` is added to the absolute air pressure to get the relative (sea level) air pressure, unit: hPa.
+The initial value is copied from the weather station, assuming you have set it up to display the correct relative pressure, but you can adjust the value in weather.ini to calibrate your station. You can calculate this value or use the difference to a trusted weatherstation or weather service nearby.
+You must update all your stored data by running :py:mod:`pywws.reprocess` after you change this value.
+
+.. versionchanged:: 13.10_r1082
+   made ``pressure offset`` a config item.
+   Previously it was always read from the weather station.
+
+``gnuplot encoding`` is the text encoding used when plotting graphs. The default value of ``iso_8859_1`` allows the degree symbol, which is useful in a weather application! Other values might be needed if your language includes accented characters. The possible values depend on your gnuplot installation so some experimentation may be needed.
+
+``template encoding`` is the text encoding used for templates.
+The default value is ``iso-8859-1``, which is the encoding used in most of the example templates.
+If you create templates with a different character set, you should change this value to match your templates.
+
+``language`` is used to localise pywws. It's optional, as pywws usually uses the computer's default language as set by the LANG environment variable. The available languages are those in the ``translations`` subdirectory of your pywws installation. If you set any other language, pywws will fall back to using English.
+
+``logdata sync`` sets the quality of synchronisation used by :doc:`../api/pywws.logdata`. Set it to 0 for fast & inaccurate or 1 for slower but precise.
+
+``rain day threshold`` is the amount of rain (in mm) that has to fall in one day for it to qualify as a rainy day in the monthly summary data.
+You must update all your stored data by running :py:mod:`pywws.reprocess` after you change this value.
+
+.. versionadded:: 13.10_r1094
+   ``usb activity margin`` controls the algorithm that avoids the "USB lockup" problem that affects some stations.
+   It sets the number of seconds either side of expected station activity (receiving a reading from outside or logging a reading) that pywws does not get data from the station.
+   If your station is not affected by the USB lockup problem you can set ``usb activity margin`` to 0.0.
+
+.. versionadded:: 13.11_r1102
+   ``gnuplot version`` tells :py:mod:`pywws.plot` and :py:mod:`pywws.windrose` what version of gnuplot is installed on your computer.
+   This allows them to use version-specific features to give improved plot quality.
+
+.. versionadded:: 14.01_r1133
+   ``frequent writes`` tells :py:mod:`pywws.regulartasks` to save weather data and status to file every time there is new logged data.
+   The default is to save the files every hour, to reduce "wear" on solid state memory such as the SD cards used with Raspberry Pi computers.
+   If your weather data directory is stored on a conventional disc drive you can set ``frequent writes`` to ``True``.
+
+.. _weather_ini-paths:
+
+paths: directories in which templates etc. are stored
+-----------------------------------------------------
+::
+
+ [paths]
+ templates = /home/$USER/weather/templates/
+ graph_templates = /home/$USER/weather/graph_templates/
+ work = /tmp/weather
+ user_calib = /home/$USER/weather/modules/usercalib
+ modules = /home/$USER/weather/modules/
+
+These entries specify where your text templates and graph templates are stored, where temporary files should be created, where template output (that is not uploaded) should be put, the location of your calibration module (if you have one), and where any other modules you create are stored.
+
+live: tasks to be done every 48 seconds
+---------------------------------------
+::
+
+ [live]
+ services = ['underground', ('copy', 'yowindow.xml')]
+ text = ['yowindow.xml']
+ plot = []
+
+This section specifies tasks that are to be carried out for every data sample during 'live logging', i.e. every 48 seconds.
+
+``services`` is a list of 'services' to upload data to.
+Some are just a single word, others have one or more parameters and need to be enclosed in brackets.
+Each one listed must have a module in ``pywws.service`` or your modules directory.
+See :ref:`integration - other services<guides-integration-other>` for more detail.
+pywws will automatically limit the frequency of service uploads according to each service's requirements.
+
+``text`` and ``plot`` are lists of text and plot templates to be processed.
+
+logged: tasks to be done every time the station logs a data record
+------------------------------------------------------------------
+::
+
+ [logged]
+ services = ['underground', 'metoffice']
+ text = []
+ plot = []
+
+This section specifies tasks that are to be carried out every time a data record is logged when 'live logging' or every time an hourly cron job is run.
+
+``services`` is a list of 'services' to upload data to.
+Some are just a single word, others have one or more parameters and need to be enclosed in brackets.
+Each one listed must have a module in ``pywws.service`` or your modules directory.
+See :ref:`integration - other services<guides-integration-other>` for more detail.
+
+``text`` and ``plot`` are lists of text and plot templates to be processed.
+
+cron: tasks to be done at a particular time or date
+---------------------------------------------------
+
+.. versionadded:: 14.05.dev1211
+
+::
+
+ [cron daily 9]
+ format = 0 9 * * *
+ plot = ['28days.png.xml']
+ text = ['forecast.txt', 'forecast_9am.txt', 'forecast_week.txt']
+ services = [('twitter', 'forecast.txt'), ('ftp', 'forecast_9am.txt', 'forecast_week.txt')]
+
+ [cron daily 21]
+ format = 0 21 * * *
+ text = ['forecast_9am.txt']
+ services = [('ftp', 'forecast_9am.txt')]
+ plot = []
+
+ [cron weekly]
+ format = 0 9 * * 6
+ plot = ['2008.png.xml', '2009.png.xml', '2010.png.xml', '2011.png.xml',
+         '2012.png.xml', '2013.png.xml']
+ text = ['2008.txt', '2009.txt', '2010.txt', '2011.txt', '2012.txt', '2013.txt']
+ services = [('ftp', '2008.png', '2009.png', '2010.png', '2011.png',
+                     '2012.png', '2013.png', '2008.txt', '2009.txt',
+                     '2010.txt', '2011.txt', '2012.txt', '2013.txt')]
+
+``[cron name]`` sections provide a very flexible way to specify tasks to be done at a particular time and/or date.
+``name`` can be anything you like, but each ``[cron name]`` section must have a unique name.
+
+To use ``[cron name]`` sections you need to install the "croniter" package.
+See :doc:`../essentials/dependencies` for more detail.
+
+``format`` specifies when the tasks should be done (in local time), in the usual crontab format.
+(See ``man 5 crontab`` on any Linux computer.)
+Processing is not done exactly on the minute, but when the next live or logged data arrives.
+
+hourly: tasks to be done every hour
+-----------------------------------
+::
+
+ [hourly]
+ services = [('twitter', 'tweet.txt'),
+             ('ftp', '7days.png', '24hrs.png', 'rose_12hrs.png',
+                     '24hrs.txt', '6hrs.txt', '7days.txt', 'feed_hourly.xml')]
+ text = ['tweet.txt', '24hrs.txt', '6hrs.txt', '7days.txt', 'feed_hourly.xml']
+ plot = ['7days.png.xml', '24hrs.png.xml', 'rose_12hrs.png.xml']
+
+This section specifies tasks that are to be carried out every hour when 'live logging' or running an hourly cron job.
+
+``services`` is a list of 'services' to upload data to.
+Some are just a single word, others have one or more parameters and need to be enclosed in brackets.
+Each one listed must have a module in ``pywws.service`` or your modules directory.
+See :ref:`integration - other services<guides-integration-other>` for more detail.
+
+``text`` and ``plot`` are lists of text and plot templates to be processed.
+
+12 hourly: tasks to be done every 12 hours
+------------------------------------------
+::
+
+ [12 hourly]
+ services = []
+ text = []
+ plot = []
+
+This section specifies tasks that are to be carried out every 12 hours when 'live logging' or running an hourly cron job. Use it for things that don't change very often, such as monthly graphs.
+The tasks are done at your day end hour, and 12 hours later.
+
+``services`` is a list of 'services' to upload data to.
+Some are just a single word, others have one or more parameters and need to be enclosed in brackets.
+Each one listed must have a module in ``pywws.service`` or your modules directory.
+See :ref:`integration - other services<guides-integration-other>` for more detail.
+
+``text`` and ``plot`` are lists of text and plot templates to be processed.
+
+daily: tasks to be done every 24 hours
+--------------------------------------
+::
+
+ [daily]
+ services = [('ftp', '2008.png', '2009.png', '2010.png', '28days.png', 'feed_daily.xml')]
+ text = ['feed_daily.xml']
+ plot = ['2008.png.xml', '2009.png.xml', '2010.png.xml', '28days.png.xml']
+
+This section specifies tasks that are to be carried out every day when 'live logging' or running an hourly cron job. Use it for things that don't change very often, such as monthly or yearly graphs.
+The tasks are done at your day end hour.
+
+``services`` is a list of 'services' to upload data to.
+Some are just a single word, others have one or more parameters and need to be enclosed in brackets.
+Each one listed must have a module in ``pywws.service`` or your modules directory.
+See :ref:`integration - other services<guides-integration-other>` for more detail.
+
+``text`` and ``plot`` are lists of text and plot templates to be processed.
+
+underground, metoffice, temperaturnu etc: configuration of posting to 'services'
+--------------------------------------------------------------------------------
+::
+
+ [underground]
+ station = IXYZABA5
+ password = secret
+
+These sections contain information such as passwords and station IDs needed to upload data to weather services. The names of the data entries depend on the service. The example shown is for Weather Underground.
+
+``station`` is the PWS ID allocated to your weather station by Weather Underground.
+
+``password`` is your Weather Underground password.
+
+status.ini - status file format
+===============================
+
+This file is written by pywws and should not (usually) be edited.
+The following sections are currently in use:
+
+  * fixed: values copied from the weather station's "fixed block".
+  * clock: synchronisation information.
+  * last update: date and time of most recent task completions.
+
+fixed: values copied from the weather station's "fixed block"
+-------------------------------------------------------------
+::
+
+ [fixed]
+ fixed block = {...}
+
+``fixed block`` is all the data stored in the first 256 bytes of the station's memory.
+This includes maximum and minimum values, alarm threshold settings, display units and so on.
+
+clock: synchronisation information
+----------------------------------
+::
+
+ [clock]
+ station = 1360322930.02
+ sensor = 1360322743.69
+
+These values record the measured times when the station's clock logged some data and when the outside sensors transmitted a new set of data.
+They are used to try and prevent the USB interface crashing if the computer accesses the weather station at the same time as either of these events, a common problem with many EasyWeather compatible stations.
+The times are measured every 24 hours to allow for drift in the clocks.
+
+last update: date and time of most recent task completions
+----------------------------------------------------------
+::
+
+ [last update]
+ hourly = 2013-05-30 19:04:15
+ logged = 2013-05-30 19:04:15
+ daily = 2013-05-30 09:04:15
+ openweathermap = 2013-05-30 18:59:15
+ underground = 2013-05-30 18:58:34
+ metoffice = 2013-05-30 18:59:15
+ 12 hourly = 2013-05-30 09:04:15
+
+These record date & time of the last successful completion of various tasks.
+They are used to allow unsuccessful tasks (e.g. network failure preventing uploads) to be retried after a few minutes.
