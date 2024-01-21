@@ -1,0 +1,34 @@
+#! pywws - Python software for USB Wireless Weather Stations                       #
+#! http://github.com/jim-easterbrook/pywws                                         #
+#! Copyright (C) 2015  pywws contributors                                          #
+#!                                                                                 #
+#! This program is free software; you can redistribute it and/or                   #
+#! modify it under the terms of the GNU General Public License                     #
+#! as published by the Free Software Foundation; either version 2                  #
+#! of the License, or (at your option) any later version.                          #
+#!                                                                                 #
+#! This program is distributed in the hope that it will be useful,                 #
+#! but WITHOUT ANY WARRANTY; without even the implied warranty of                  #
+#! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                   #
+#! GNU General Public License for more details.                                    #
+#!                                                                                 #
+#! You should have received a copy of the GNU General Public License               #
+#! along with this program; if not, write to the Free Software                     #
+#! Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. #
+#raw#
+#timezone utc#
+#jump -1#
+#jump 1#
+{
+	"timecreated": "#idx '%Y-%m-%dT%H:%M:%SZ'#",
+	"wind_dir_deg": "#wind_dir '%0.0f' '' 'winddir_degrees(x)'#",
+	"wind_dir_txt": "#wind_dir '%s' '' 'winddir_text(x)'#",
+	"wind_speed_mps": "#wind_ave '%0.2f'#",
+	"wind_gust_mps": "#wind_gust '%0.2f'#",
+	"hum_out_perc": "#hum_out '%0.0d'#",
+	"temp_out_c": "#temp_out '%0.1f'#",
+	"hum_in_perc": "#hum_in '%0.0d'#",
+	"temp_in_c": "#temp_in '%0.1f'#",
+	"rel_pressure_hpa": "#rel_pressure '%0.2f'#",
+	"rain_mm": "#calc 'data["rain"]-prevdata["rain"]' '%0.1f'#"
+}

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<graph>
+  <!--
+  pywws - Python software for USB Wireless Weather Stations
+  http://github.com/jim-easterbrook/pywws
+  Copyright (C) 2008-13  Jim Easterbrook  jim@jim-easterbrook.me.uk
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  -->
+  <size>600, 800</size>
+  <duration>weeks=1</duration>
+  <xformat>%a %d</xformat>
+  <dateformat></dateformat>
+  <plot>
+    <yrange>-10, 35</yrange>
+    <source>hourly</source>
+    <subplot>
+      <colour>1</colour>
+      <title>Temperature (°C)</title>
+      <ycalc>data['temp_out']</ycalc>
+    </subplot>
+    <subplot>
+      <colour>3</colour>
+      <ycalc>dew_point(data['temp_out'], data['hum_out'])</ycalc>
+      <title>Dew point (°C)</title>
+    </subplot>
+  </plot>
+  <plot>
+    <title>Wind speed (mph)</title>
+    <yrange>0, 30</yrange>
+    <source>hourly</source>
+    <subplot>
+      <colour>4</colour>
+      <ycalc>wind_mph(data['wind_gust'])</ycalc>
+      <title>gust</title>
+    </subplot>
+    <subplot>
+      <colour>3</colour>
+      <ycalc>wind_mph(data['wind_ave'])</ycalc>
+      <title>average</title>
+    </subplot>
+  </plot>
+  <plot>
+    <yrange>0, 5</yrange>
+    <source>hourly</source>
+    <subplot>
+      <colour>5</colour>
+      <style>box</style>
+      <xcalc>data['idx'].replace(minute=30, second=0)</xcalc>
+      <ycalc>data['rain']</ycalc>
+      <title>Hourly rainfall (mm)</title>
+    </subplot>
+  </plot>
+  <plot>
+    <source>hourly</source>
+    <subplot>
+      <colour>2</colour>
+      <ycalc>data['rel_pressure']</ycalc>
+      <title>Pressure (hPa)</title>
+    </subplot>
+    <yrange>960, 1050</yrange>
+  </plot>
+</graph>

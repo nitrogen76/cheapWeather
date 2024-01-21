@@ -1,0 +1,34 @@
+*** Linux with libusb 1.0 (NEW 2018-11) ***
+
+Since version 2.1.14, libusb 1.0 is used by default.
+
+Requirements:
+ - libusb-1.0-0-dev
+ - libqt5-dev
+ - qt5script-dev (Since 2.1.19)
+ - Standard compilation tools (make, gcc, g++)
+
+Once you have all the required libraries installed, all you need to do is:
+
+# qmake
+# make -j2
+
+*** Linux with libusb 0.1 (old) ***
+
+Prior to release 2.1.14, libusb 0.1 was used by default. If you need to
+use it, an alternate qmake project file is available: qtenki.pro.libusb0.1 (see notes below)
+
+Requirements:
+ - libusb-dev
+ - libqt4-dev (or qt5)
+ - Standard compilation tools (make, gcc, g++)
+
+Under debian or ubuntu:
+
+$ sudo apt-get install libusb-dev libqt4-dev g++
+
+Once you have all the required libraries installed, all you need to do is:
+
+# qmake qtenki.pro.libusb0.1
+# make -j2
+
