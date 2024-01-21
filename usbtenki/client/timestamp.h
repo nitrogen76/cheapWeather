@@ -1,0 +1,3 @@
+
+void printTimeStamp(FILE *stream);
+
