@@ -20,7 +20,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 # Get config info
 config = configparser.ConfigParser()
-config.read('/local/leo/cheapWeather/cheapWeather.ini')
+config.read('/etc/cheapWeather.ini')
 
 #### You can replace these variables with the actual settings
 #### otherwise, just grab the config file from nitrogen76/cheapWeather
