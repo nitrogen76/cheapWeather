@@ -9,7 +9,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 import configparser
 
 config = configparser.ConfigParser()
-config.read('/local/leo/cheapWeather/cheapWeather.ini')
+config.read('/etc/cheapWeather.ini')
 
 ##influxUser=config.get('Influx','user')
 ##influxPass=config.get('Influx','password')

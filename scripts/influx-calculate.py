@@ -37,7 +37,7 @@ if DEBUG==True:
 
 # Get config info
 config = configparser.ConfigParser()
-config.read('../cheapWeather.ini')
+config.read('/etc/cheapWeather.ini')
 ### Variables
 softwareVersion='&softwaretype=cheapWeather%20version%20swullock'
 
