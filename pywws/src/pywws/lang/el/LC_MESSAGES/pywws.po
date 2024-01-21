@@ -1,0 +1,238 @@
+# Translations template for pywws.
+# Copyright (C) 2016 Jim Easterbrook
+# This file is distributed under the same license as the pywws project.
+# 
+# Translators:
+# Jim Easterbrook <jim@jim-easterbrook.me.uk>, 2017
+# Petros Nouvakis <nouvakis@gmail.com>, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: pywws\n"
+"Report-Msgid-Bugs-To: jim@jim-easterbrook.me.uk\n"
+"POT-Creation-Date: 2016-12-13 08:34+0000\n"
+"PO-Revision-Date: 2017-01-18 11:13+0000\n"
+"Last-Translator: Jim Easterbrook <jim@jim-easterbrook.me.uk>\n"
+"Language-Team: Greek (http://www.transifex.com/jim-easterbrook/pywws/language/el/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.3\n"
+"Language: el\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Keep the "(%Z)" formatting string
+#: src/pywws/Plot.py:795
+msgid "Time (%Z)"
+msgstr "Ωρα (%Z)"
+
+#: src/pywws/Plot.py:797
+msgid "Day"
+msgstr "Ημέρα"
+
+#: src/pywws/Plot.py:799
+msgid "Date"
+msgstr "Ημερομηνία"
+
+#: src/pywws/WindRose.py:391 src/pywws/conversions.py:162
+msgid "N"
+msgstr "Β"
+
+#: src/pywws/WindRose.py:391 src/pywws/conversions.py:163
+msgid "E"
+msgstr "Α"
+
+#: src/pywws/WindRose.py:391 src/pywws/conversions.py:164
+msgid "S"
+msgstr "Ν"
+
+#: src/pywws/WindRose.py:391 src/pywws/conversions.py:165
+msgid "W"
+msgstr "Δ"
+
+#: src/pywws/ZambrettiCore.py:29
+msgid "Settled fine"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:30
+msgid "Fine weather"
+msgstr "περίφημος καιρός"
+
+#: src/pywws/ZambrettiCore.py:31
+msgid "Becoming fine"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:32
+msgid "Fine, becoming less settled"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:33
+msgid "Fine, possible showers"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:34
+msgid "Fairly fine, improving"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:35
+msgid "Fairly fine, possible showers early"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:36
+msgid "Fairly fine, showery later"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:37
+msgid "Showery early, improving"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:38
+msgid "Changeable, mending"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:39
+msgid "Fairly fine, showers likely"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:40
+msgid "Rather unsettled clearing later"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:41
+msgid "Unsettled, probably improving"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:42
+msgid "Showery, bright intervals"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:43
+msgid "Showery, becoming less settled"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:44
+msgid "Changeable, some rain"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:45
+msgid "Unsettled, short fine intervals"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:46
+msgid "Unsettled, rain later"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:47
+msgid "Unsettled, some rain"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:48
+msgid "Mostly very unsettled"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:49
+msgid "Occasional rain, worsening"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:50
+msgid "Rain at times, very unsettled"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:51
+msgid "Rain at frequent intervals"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:52
+msgid "Rain, very unsettled"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:53
+msgid "Stormy, may improve"
+msgstr ""
+
+#: src/pywws/ZambrettiCore.py:54
+msgid "Stormy, much rain"
+msgstr ""
+
+#: src/pywws/conversions.py:56
+msgid "rising very rapidly"
+msgstr "ραγδαία άνοδος"
+
+#: src/pywws/conversions.py:58
+msgid "rising quickly"
+msgstr "γρήγορη άνοδος"
+
+#: src/pywws/conversions.py:60
+msgid "rising"
+msgstr "άνοδος"
+
+#: src/pywws/conversions.py:62
+msgid "rising slowly"
+msgstr "αργή άνοδος"
+
+#: src/pywws/conversions.py:64
+msgid "falling very rapidly"
+msgstr "ραγδαία πτώση"
+
+#: src/pywws/conversions.py:66
+msgid "falling quickly"
+msgstr "γρήγορη πτώση"
+
+#: src/pywws/conversions.py:68
+msgid "falling"
+msgstr "πτώση"
+
+#: src/pywws/conversions.py:70
+msgid "falling slowly"
+msgstr "αργή πτώση"
+
+#: src/pywws/conversions.py:71
+msgid "steady"
+msgstr "σταθερή"
+
+#: src/pywws/conversions.py:162
+msgid "NNE"
+msgstr "ΒΒΑ"
+
+#: src/pywws/conversions.py:162
+msgid "NE"
+msgstr "ΒΑ"
+
+#: src/pywws/conversions.py:162
+msgid "ENE"
+msgstr "ΑΒΑ"
+
+#: src/pywws/conversions.py:163
+msgid "ESE"
+msgstr "ΑΝΑ"
+
+#: src/pywws/conversions.py:163
+msgid "SE"
+msgstr "ΝΑ"
+
+#: src/pywws/conversions.py:163
+msgid "SSE"
+msgstr "ΝΝΑ"
+
+#: src/pywws/conversions.py:164
+msgid "SSW"
+msgstr "ΝΝΔ"
+
+#: src/pywws/conversions.py:164
+msgid "SW"
+msgstr "ΝΔ"
+
+#: src/pywws/conversions.py:164
+msgid "WSW"
+msgstr "ΔΝΔ"
+
+#: src/pywws/conversions.py:165
+msgid "WNW"
+msgstr "ΔΒΔ"
+
+#: src/pywws/conversions.py:165
+msgid "NW"
+msgstr "ΒΔ"
+
+#: src/pywws/conversions.py:165
+msgid "NNW"
+msgstr "ΒΒΔ"

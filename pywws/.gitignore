@@ -1,0 +1,26 @@
+.gitignore
+*.py[co]
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+
+# Editor backups
+*~
+
+# Compiled documentation
+/doc
+/src/doc/api/pywws.*.rst
+
+# Compiled language files
+*.mo
+*.stackdump

@@ -1,0 +1,60 @@
+#! pywws - Python software for USB Wireless Weather Stations                       #
+#! http://github.com/jim-easterbrook/pywws                                         #
+#! Copyright (C) 2008-16  pywws contributors                                       #
+#!                                                                                 #
+#! This program is free software; you can redistribute it and/or                   #
+#! modify it under the terms of the GNU General Public License                     #
+#! as published by the Free Software Foundation; either version 2                  #
+#! of the License, or (at your option) any later version.                          #
+#!                                                                                 #
+#! This program is distributed in the hope that it will be useful,                 #
+#! but WITHOUT ANY WARRANTY; without even the implied warranty of                  #
+#! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                   #
+#! GNU General Public License for more details.                                    #
+#!                                                                                 #
+#! You should have received a copy of the GNU General Public License               #
+#! along with this program; if not, write to the Free Software                     #
+#! Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA. #
+#encoding html#
+#daily#
+#timezone local#
+#roundtime True#
+<table border="1" rules="all">
+#jump -1#
+#loop 2#
+  <tr>
+    <th colspan="2" class="left">
+      #start "From %H%M %Z on %d %b to" "24 hours ending" "[x, None][loop_count == 2]"#
+#idx " %H%M %Z on %d %b %Y"# 
+    </th>
+    <th colspan="2">Date &amp; time</th>
+  </tr>
+  <tr>
+    <th class="right">Daytime max temp</th>
+    <td>#temp_out_max "%.1f &deg;C"#</td>
+    <td>#temp_out_max_t "%Y/%m/%d</td><td>%H%M %Z"#</td>
+  </tr>
+  <tr>
+    <th class="right">Night min temp</th>
+    <td>#temp_out_min "%.1f &deg;C"#</td>
+    <td>#temp_out_min_t "%Y/%m/%d</td><td>%H%M %Z"#</td>
+  </tr>
+  <tr>
+    <th class="right">Total rainfall</th>
+    <td>#rain "%.1f mm"#</td>
+    <td colspan="2"></td>
+  </tr>
+  <tr>
+    <th class="right">Average wind speed</th>
+    <td>#wind_ave "%.0f mph" "-" "wind_mph(x)"#</td>
+    <td colspan="2"></td>
+  </tr>
+  <tr>
+    <th class="right">Highest gust speed</th>
+    <td>#wind_gust "%.0f mph" "-" "wind_mph(x)"#</td>
+    <td>#wind_gust_t "%Y/%m/%d</td><td>%H%M %Z"#</td>
+  </tr>
+#idx "  <tr><th colspan=\"4\">&nbsp;</th></tr>" "" "[x, None][loop_count==1]"#
+#jump 1#
+#endloop#
+</table>
