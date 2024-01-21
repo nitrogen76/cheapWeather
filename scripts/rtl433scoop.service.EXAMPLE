@@ -1,0 +1,24 @@
+[Unit]
+Description="rtlscoop service"
+
+[Service]
+Type=simple
+
+
+ExecStart=rtl_433 -d:00000433 -M time:unix:usec:utc -R 142 -R 40 -R 73 -R 113 -R 42 -M ID -M protocol -M level -C si -F "influx://${INFLUXDB.HOSTNAME}:8086/api/v2/write?org=${INFLUX_ORG}&bucket=${INFLUX_BUCKET},token=${YOUR_INFLUX_V2_TOKEN}
+
+# If your influxv2 uses ssl, use this
+#ExecStart=rtl_433 -d:00000433 -M time:unix:usec:utc -R 142 -R 40 -R 73 -R 113 -R 42 -M ID -M protocol -M level -C si -F "influxs://${INFLUXDB.HOSTNAME}:8086/api/v2/write?org=${INFLUX_ORG}&bucket=${INFLUX_BUCKET},token=${YOUR_INFLUX_V2_TOKEN},tls_ca_cert=${PATHNAME_AND_FILENAME_OF_ANCHOR_CERT}
+
+## If your influx does not use ssl, remove the
+
+Restart=on-failure
+PIDFile=/tmp/rtlcoop.service.pid
+User=nobody
+WorkingDirectory=/tmp
+
+[Install]
+WantedBy=network-online.target
+
+## sudo usermod -a -G rtlsdr nobody
+
