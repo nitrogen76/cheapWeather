@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ##
-## Influx to Wunderground influx v2
+## Influx to Wunderground
 ##
 ##
 
@@ -15,8 +15,7 @@ import subprocess
 import sys
 import metpy.calc as mpcalc
 from metpy.units import units
-import influxdb_client
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb import InfluxDBClient
 
 ## Argumenmts
 parser = argparse.ArgumentParser('description: generate some values every minute from values in influx, and also send data to wunderground.')
@@ -42,6 +41,10 @@ if useWunder==True:
 if useWunder==False and DEBUG==True:
     print ("DEBUG: Wunderground disabled, variables not read")
         
+influxUser=config.get('Influx','user')
+influxPass=config.get('Influx','password')
+influxDB=config.get('Influx','database')
+influxHost=config.get('Influx','host')
 thermometer=config.get('Query','thermometer')
 humidityStation=config.get('Query','humiditystation')
 windStation=config.get('Query','windstation')
@@ -53,11 +56,6 @@ useSensehat=config.get('Baro','useSenseHat')
 Altitude=config.get('Baro','myAltitude')
 Altitude=float(Altitude)
 useWunderground=config.get('Wunderground','useWunderground')
-
-influxv2Url=config.get('InfluxV2','url')
-influxv2Bucket=config.get('InfluxV2','bucket')
-influxv2Org=config.get('InfluxV2','org')
-influxv2Token=config.get('InfluxV2','token')
 
 
 tempQueryC='SELECT last("temperature_C") FROM '
@@ -75,15 +73,15 @@ if DEBUG==True:
    print(       "useDracal= ", useDracal)
    print(       "dracalSwitches= ", dracalSwitches)
    print(       "dracalPath= ", dracalPath)
+   print(       "influx Userid= ", influxUser)
+   print(       "influx database= ", influxDB)
+   print(       "influx host= ", influxHost)
    print(       "useWunderground= ", useWunderground)
    print(       "wunderground user= ", wundergroundUser)
    print(       "thermometer= ", thermometer)
    print(       "humidity station= ", humidityStation)
    print(       "wind station= ", windStation)
    print(       "baro station= ", baroStation)
-   print(       "influxv2URL= ", influxv2Url)
-   print(       "influxv2Bucket= ",influxv2Bucket)
-   print(       "influxv2Org= ",influxv2Org)
 
 if useWunder==True or useWunderground==1:
    WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
@@ -91,12 +89,7 @@ if useWunder==True or useWunderground==1:
 
 ######
 
-#client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
-client = influxdb_client.InfluxDBClient(url=(influxv2Url), token=(influxv2Token), org=(influxv2Org), bucket=(influxv2Bucket))
-write_api = client.write_api(write_options=SYNCHRONOUS)
-query_api = client.query_api()
-
-
+client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
 
 ## Move barometer.py into this
@@ -111,10 +104,17 @@ if useSensehat == "1":
     baro=round((baroX),4)
     if DEBUG==True:
       print( baro)
-    senseHatPoints =  influxdb_client.Point("SenseHat").field("Barometer",(baro))
-    write_api.write(bucket=(influxv2Bucket),org=(influxv2Org),record=senseHatPoints)
-    baroPOINTS=senseHatPoints
-     
+    baroJSON = [{"measurement":"SenseHat",
+
+        "fields":
+        {
+        "Barometer":(baro)
+        }
+        },
+        ]
+
+    #print(baroJSON)
+    client.write_points(baroJSON)
 else:
     if DEBUG==True:
        print("no Sensehat")
@@ -133,134 +133,68 @@ if useDracal == "1":
     dracalBaroSL=dracalBaroFloat/pow(1-((Altitude)/44330.0),5.255)
     if DEBUG==True:
        print(dracalBaroSL)
-    dracalPoints =  influxdb_client.Point("Dracal").field("Barometer",(dracalBaroSL)).field("Thermometer",(dracalTempFloat)).field("UnCorrectedBarometer",(dracalBaroFloat))
-    write_api.write(bucket=(influxv2Bucket),org=(influxv2Org),record=dracalPoints)
-    baroPOINTS=dracalPoints
+    baroJSON = [{"measurement":"Dracal",
+        "fields":
+        {
+        "Barometer":(dracalBaroSL),
+        "Thermometer":(dracalTempFloat),
+        "UnCorrectedBarometer":(dracalBaroFloat)
+        }
+        }
+        ]
+
+    client.write_points(baroJSON)
 
 # get last temp C
-#tmpC=client.query(tempQueryC + thermometer)
-
-tmpQuery = 'from(bucket:"weather")\
-       |> range(start: -1m)\
-       |> filter(fn:(r) => r._measurement == ' +(thermometer)+')\
-       |> filter(fn:(r) => r._field == "temperature_C")\
-       |> group()\
-       |> last()'
-
-
-tmpResult = query_api.query(org=(influxv2Org), query=tmpQuery)
-results = []
-for table in tmpResult:
-    for record in table.records:
-          results.append(record.get_value())
-
-tmpC=results
+tmpC=client.query(tempQueryC + thermometer)
 tmpString=str(tmpC)
-tempC=tmpString.replace("[","").replace("]","")
+tmpSliced=tmpString.split(':')[5]
+tempC=tmpSliced.split('}')[0]
 tempC=tempC.strip()
 tempC=float(tempC)
 tempPint=(tempC * units.degC)
 
 ## Get last humidity
-
-tmpQuery = 'from(bucket:"weather")\
-       |> range(start: -1m)\
-       |> filter(fn:(r) => r._measurement == ' +(humidityStation)+')\
-       |> filter(fn:(r) => r._field == "humidity")\
-       |> group()\
-       |> last()'
-
-
-tmpResult = query_api.query(org=(influxv2Org), query=tmpQuery)
-results = []
-for table in tmpResult:
-   for record in table.records:
-    results.append(record.get_value())
-
-tmpString=str(results)
-humidityP=tmpString.replace("[","").replace("]","")
+tmp=client.query(humidityQuery + humidityStation)
+tmpString=str(tmp)
+tmpSliced=tmpString.split(':')[5]
+humidityP=tmpSliced.split('}')[0]
+humidityP=humidityP.strip()
 humidityPF=float(humidityP)
 humidityPint=(humidityPF * units.percent)
 
 ## Get last windspeed
-
-tmpQuery = 'from(bucket:"weather")\
-       |> range(start: -1m)\
-       |> filter(fn:(r) => r._measurement == ' +(windStation)+')\
-       |> filter(fn:(r) => r._field == "wind_avg_km_h")\
-       |> group()\
-       |> last()'
-
-
-tmpResult = query_api.query(org=(influxv2Org), query=tmpQuery)
-results = []
-for table in tmpResult:
-    for record in table.records:
-          results.append(record.get_value())
-
-
-tmpString=(results)
-tmpString=str(tmpString)
-windKPH=tmpString.replace("[","").replace("]","")
+tmp=client.query(windspeedQuery + windStation)
+tmpString=str(tmp)
+tmpSliced=tmpString.split(':')[5]
+windKPH=tmpSliced.split('}')[0]
+windKPH=windKPH.strip()
 windKPH=float(windKPH)
 windPint=(windKPH * units.kilometer_per_hour)
 
 ## Get last winddir
-tmpQuery = 'from(bucket:"weather")\
-       |> range(start: -1m)\
-       |> filter(fn:(r) => r._measurement == ' +(windStation)+')\
-       |> filter(fn:(r) => r._field == "wind_dir_deg")\
-       |> group()\
-       |> last()'
-
-tmpResult = query_api.query(org=(influxv2Org), query=tmpQuery)
-results = []
-for table in tmpResult:
-    for record in table.records:
-          results.append(record.get_value())
-
-tmpString=str(results)
-windDIR=tmpString.replace("[","").replace("]","")
-windDIR=float(windDIR)
+tmp=client.query(winddirQuery + windStation)
+tmpString=str(tmp)
+tmpSliced=tmpString.split(':')[5]
+windDIR=tmpSliced.split('}')[0]
+windDIR=windDIR.strip()
 windDIRPint=(windDIR * units.degrees)
 
 ## get last windgust
-
-tmpQuery = 'from(bucket:"weather")\
-       |> range(start: -1m)\
-       |> filter(fn:(r) => r._measurement == ' +(windStation)+')\
-       |> filter(fn:(r) => r._field == "wind_max_km_h")\
-       |> group()\
-       |> last()'
-tmpResult = query_api.query(org=(influxv2Org), query=tmpQuery)
-results = []
-for table in tmpResult:
-    for record in table.records:
-          results.append(record.get_value())
-
-tmpString=str(results)
-windGustKPH=tmpString.replace("[","").replace("]","")
+tmp=client.query(windgustQuery + windStation + gustTime)
+tmpString=str(tmp)
+tmpSliced=tmpString.split(':')[5]
+windGustKPH=tmpSliced.split('}')[0]
+windGustKPH=windGustKPH.strip()
 windGustKPH=float(windGustKPH)
 windGustPint=(windGustKPH * units.kilometer_per_hour)
 
 ## get last barometer
-
-tmpQuery = 'from(bucket:"weather")\
-       |> range(start: -1m)\
-       |> filter(fn:(r) => r._measurement == ' +(baroStation)+')\
-       |> filter(fn:(r) => r._field == "Barometer")\
-       |> group()\
-       |> last()'
-
-
-tmpResult = query_api.query(org=(influxv2Org), query=tmpQuery)
-results = []
-for table in tmpResult:
-    for record in table.records:
-          results.append(record.get_value())
-
-tmpString=str(results)
-baroINHG=tmpString.replace("[","").replace("]","")
+tmp=client.query(baroQuery + baroStation)
+tmpString=str(tmp)
+tmpSliced=tmpString.split(':')[5]
+baroINHG=tmpSliced.split('}')[0]
+baroINHG=baroINHG.strip()
 baroINHG=float(baroINHG)
 baroPint=(baroINHG * units.inHg)
 
@@ -295,26 +229,57 @@ if DEBUG==True:
 
 
 
-dewpointPOINTS  = influxdb_client.Point("Dewpoint").field("dewpoint",(dewPointPint.magnitude))
-heatIndexPOINTS = influxdb_client.Point("Heatindex").field("heatindex",(heatindexPint.magnitude))
-WBTIndexPOINTS  = influxdb_client.Point("Wet Bulb Temp").field("Wet Bulb Temp",(wetBulbPint.magnitude))
-windchillPOINTS = influxdb_client.Point("Windchill").field("Windchill",(windchillPint.magnitude))
+
+dewpointJSON = [{"measurement":"Dewpoint",
+
+    "fields":
+    {
+    "dewpoint":(dewPointPint.magnitude)
+    }
+    },
+    ]
+
+heatIndexJSON = [{"measurement":"Heatindex",
+
+    "fields":
+    {
+    "heatindex":(heatindexPint.magnitude)
+    }
+    },
+    ]
+
+WBTIndexJSON = [{"measurement":"Wet Bulb Temp",
+
+    "fields":
+    {
+    "Wet Bulb Temp":(wetBulbPint.magnitude)
+    }
+    },
+    ]
+
+windchillJSON = [{"measurement":"Windchill",
+
+    "fields":
+    {
+    "Windchill":(windchillPint.magnitude)
+    }
+    },
+    ]
 
 if DEBUG==False:
-    
-    write_api.write(bucket=(influxv2Bucket),org=(influxv2Org),record=dewpointPOINTS)
-    write_api.write(bucket=(influxv2Bucket),org=(influxv2Org),record=heatIndexPOINTS)
-    write_api.write(bucket=(influxv2Bucket),org=(influxv2Org),record=WBTIndexPOINTS)
-    write_api.write(bucket=(influxv2Bucket),org=(influxv2Org),record=windchillPOINTS)
+    client.write_points(dewpointJSON)
+    client.write_points(heatIndexJSON)
+    client.write_points (WBTIndexJSON)
+    client.write_points (windchillJSON)
 
 if DEBUG==True:
     print ("DEBUG: Not sending to INFLUX")
     print ("     This is what would have been sent")
-    print ("     dewpoint : ",dewpointPOINTS)
-    print ("     heatIndex: ",heatIndexPOINTS)
-    print ("     Wet Bulb : ",WBTIndexPOINTS)
-    print ("     Windchill : ",windchillPOINTS)
-    print ("     Barometer : ",baroPOINTS)
+    print ("     dewpoint JSON: ",dewpointJSON)
+    print ("     heatIndexJSON: ",heatIndexJSON)
+    print ("     Wet Bulb JSON: ",WBTIndexJSON)
+    print ("     Windchill JSON: ",windchillJSON)
+    print ("     Barometer JSON: ",baroJSON)
 ## hack hack bad code alert
 
 if useWunder==True:
