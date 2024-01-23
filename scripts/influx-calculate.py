@@ -27,10 +27,14 @@ now = datetime.datetime.now()
 year= int(now.strftime('%Y'))
 month=int(now.strftime('%m'))
 day=  int(now.strftime('%d'))
+hourago = (datetime.datetime.now() - datetime.timedelta(hours=1))
 morning=datetime.datetime(year,month,day,0,0,0)
 morningTS= morning.timestamp()*1000
 morningTS=int(morningTS)
 morning=str(morningTS)
+houragoTS=hourago.timestamp()*1000
+houragoTS=int(houragoTS)
+hourago=str(houragoTS)
 
 ## Argumenmts
 parser = argparse.ArgumentParser('description: generate some values every minute from values in influx, and also send data to wunderground.')
@@ -125,23 +129,18 @@ def getPollutionQuery(field,measurement,location):
        print ("DEBUG: Pollution query for" + field + "is" , output)
     return output
 
-def getRainDiffHourQuery(measurement):
-     max=client.query('SELECT max("rain_mm")  FROM ' + measurement +' WHERE time >= now()-1h and time <= now()' )
-     max=fixInfluxOutput(max)
-     min=client.query('SELECT min("rain_mm")  FROM ' + measurement +' WHERE time >= now()-1h  and time <= now()' )
-     min=fixInfluxOutput(min)
-     output=(max-min)
-     return output
+def getRainDiffQuery(measurement,delta):
+    max=client.query('SELECT max("rain_mm")  FROM ' + measurement +' WHERE time >=  '+ delta +'ms and time <= now()' )
+    print ("RAWMAX: ",max)
+    max=fixInfluxOutput(max)
+    print ("MAX: ",max)
+    min=client.query('SELECT min("rain_mm")  FROM ' + measurement +' WHERE time >=  '+ delta +'ms and time <= now()' )
+    min=fixInfluxOutput(min)
+    print ("MIN: ",min)
+    output=(max-min)
+    print ("RaindiffQuery: ",output)
+    return output
 
-def getRainDiffDayQuery(measurement):
-     max=client.query('SELECT max("rain_mm")  FROM ' + measurement +' WHERE time >=  '+ morning +'ms and time <= now()' )
-     max=fixInfluxOutput(max)
-     min=client.query('SELECT min("rain_mm")  FROM ' + measurement +' WHERE time >=  '+ morning +'ms and time <= now()' )
-     min=fixInfluxOutput(min)
-     output=(max-min)
-     if DEBUG==True:
-        print ("DEBUG: Rain output for the day: ",output)
-     return output
 
 
 
@@ -155,8 +154,8 @@ windGustPint=(getQuery('wind_avg_km_h',windStation,float) * units.kilometer_per_
 PM1Pint=(getPollutionQuery(pm01,pollutionMeasurement,pollutionLocation) * units.micrograms)
 PM10Pint=(getPollutionQuery(pm10,pollutionMeasurement,pollutionLocation) * units.micrograms)
 PM02Pint=(getPollutionQuery(pm02,pollutionMeasurement,pollutionLocation) * units.micrograms)
-rainDiffHourPint=(getRainDiffDayQuery(rainStation) * units.millimeter)
-rainDiffDayPint=(getRainDiffDayQuery(rainStation) * units.millimeter)
+rainDiffHourPint=(getRainDiffQuery(rainStation,hourago) * units.millimeter)
+rainDiffDayPint=(getRainDiffQuery(rainStation,morning) * units.millimeter)
 
 
 
