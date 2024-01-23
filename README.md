@@ -43,6 +43,8 @@ You first need to download the rtl_433 software.
 
 Instructions for doing so can be found here: https://github.com/merbanan/rtl_433/blob/master/docs/BUILDING.md
 
+For ease of use, the rtl_433 repo is a submodule of mine.
+
 
 You can do it the easy way if you do not need bleeding edge support:
 ```
@@ -50,6 +52,8 @@ $ sudo dnf copr enable tvass/rtl_433
 $ sudo dnf install rtl_433
 ```
 Also, while we're at it, let's get influxDB installed, as well:
+
+For InfluxDB V1, its pretty simple:
 ```
 $ sudo dnf install influxdb
 $ sudo
@@ -87,6 +91,14 @@ Now, restart influxDB:
 ```
 $ sudo systemctl restart influxdb
 ```
+--- 
+
+InfluxDB v2 also works, but youi will have to set up v1 compatibility in order to allow these scripts to work.  The FLUX query language is evil incarnate, and I hate it.
+
+The good thing is, you can use v2 and v1 together in v2.  Setting up V2 is beyond the scope of this document right now, but you can infer what you need with the v1 instructions and the influx documentation.
+
+When v3 comes out for open source, we'll see how that works.
+
 ---
 
 Next step: rtl_433 software.
@@ -102,7 +114,7 @@ $ rtl_433
 ```
 If it's running on a frequency other than 433MHz, then:
 ```
-$ rtl_433 -f 195M
+$ rtl_433 -f 915M
 ```
 Or what ever frequency you want to scan.
 
@@ -150,9 +162,9 @@ I will post separate info with queries and designs I use for my dashboard.
 
 Some additional notes:
 Dewpoints are a hack. They are calculated every minute in the influx-wunderground.py script.
-If you aren't sending data to wunderground, you'll have to modify the script right now to get dewpoints.  You need InfluxDB 2.0 support to do proper joins to calculate dewpoints in Grafana.  When InfluxDB2.0 is in General Release ithere's already a howto to do that.  I just can't get Flux queries to work on my current setup, and it's not as fun to troubleshoot as this.
+If you aren't sending data to wunderground, you can disable this functionality in the influx-calculate script, or the cheapWeather.ini file
 
-The scripts are crap, it's just baby's first python scripts.  I'll welcome any PR's to help clean up my garbage and educate me better.
+The influx-calculate script is the heart of generating other values from weather station values.  I currently have this configured for MY setup.  Soon, this will be more automatic for differing setups, but for now, you might have to edit some code to customize this.  Hopefully it's easy to figure out.
 
 Got panels?  Got good (better?) queries? I'll take 'em!
 
