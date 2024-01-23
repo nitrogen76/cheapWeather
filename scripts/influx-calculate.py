@@ -152,6 +152,16 @@ PM10Pint=(getPollutionQuery(pm10,pollutionMeasurement,pollutionLocation) * units
 PM02Pint=(getPollutionQuery(pm02,pollutionMeasurement,pollutionLocation) * units.micrograms)
 rainDiffHourPint=(getRainDiffQuery(rainStation,hourago) * units.millimeter)
 rainDiffDayPint=(getRainDiffQuery(rainStation,morning) * units.millimeter)
+lux=(getQuery('light_lux',windStation,int))
+uv=(getQuery('uvi',windStation,int))
+## lux/685 is the conversion factor for green light
+#solarRadiation=(lux/685)
+## lux/126.7 is for regular solar radiation
+## I will build this into the function eventually.
+## i think most meterologists prefer the 126.7 number the more I read.
+## I got the 126.7 factor from AmbientWeather's website:
+## https://ambientweather.com/faqs/question/view/id/1452/
+solarRadiation=(lux/126.7)
 
 
 
@@ -285,6 +295,8 @@ if DEBUG==True:
    print("     hourly rain= ",rainDiffHourPint)
    print("     rain for today= ",rainDiffDayPint)
    print("     Altitude: ", altitudePint)
+   print ('    luxquery: ',lux)
+   print ('    Solar Radiation: ',solarRadiation,'wm/2')
 
 ## Create JSON output for influx V1 because V2/flux sucks 
 dewpointJSON = [{"measurement":"Dewpoint",
@@ -345,19 +357,21 @@ if DEBUG==True:
 
 if useWunder == True:
 # Build the wunderground URL
-           wundergroundRequest=(WUurl + WUcreds \
-           + "&dateutc=now&action=updateraw" +\
-           "&humidity="     + str(humidityPint.magnitude) +\
-           "&tempf="        + str(tempPint.to('degF').magnitude) +\
-           "&winddir="      + str(windDIRPint.magnitude) +\
-           "&windspeedmph= "+ str(windPint.to('mile_per_hour').magnitude) +\
-           "&windgustmph="  + str(windGustPint.to('mile_per_hour').magnitude) +\
-           "&baromin="      + str(baroPint.magnitude) +\
-           "&dewptf="       + str(dewPointPint.to('degF').magnitude) +\
-           "&rainin="       + str(rainDiffHourPint.to('inch').magnitude) +\
-           "&dailyrainin="  + str(rainDiffDayPint.to('inch').magnitude) +\
-           "&AqPM2.5="      + str(PM02Pint.magnitude) +\
-           "AqPM10="        +str(PM10Pint.magnitude) +\
+           wundergroundRequest=(WUurl + WUcreds +\
+           "&dateutc=now&action=updateraw" +\
+           "&humidity="       + str(humidityPint.magnitude) +\
+           "&tempf="          + str(tempPint.to('degF').magnitude) +\
+           "&winddir="        + str(windDIRPint.magnitude) +\
+           "&windspeedmph= "  + str(windPint.to('mile_per_hour').magnitude) +\
+           "&windgustmph="    + str(windGustPint.to('mile_per_hour').magnitude) +\
+           "&baromin="        + str(baroPint.magnitude) +\
+           "&dewptf="         + str(dewPointPint.to('degF').magnitude) +\
+           "&rainin="         + str(rainDiffHourPint.to('inch').magnitude) +\
+           "&dailyrainin="    + str(rainDiffDayPint.to('inch').magnitude) +\
+           "&AqPM2.5="        + str(PM02Pint.magnitude) +\
+           "&AqPM10="         + str(PM10Pint.magnitude) +\
+           "&UV="             + str(uv) +\
+           "&solarradiation=" + str(solarRadiation) +\
            softwareVersion)
 if useWunder==True and DEBUG==False:
    httpstatus=requests.get(wundergroundRequest)
