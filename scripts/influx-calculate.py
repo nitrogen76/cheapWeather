@@ -7,6 +7,7 @@
 ## Going back to v1, cuz v2/flux is awful.
 
 ## Imports
+import datetime
 import configparser
 import argparse
 import requests
@@ -20,6 +21,16 @@ from metpy.units import units
 #import influxdb_client
 #from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb import InfluxDBClient
+
+## set some variables that some functions will use
+now = datetime.datetime.now()
+year= int(now.strftime('%Y'))
+month=int(now.strftime('%m'))
+day=  int(now.strftime('%d'))
+morning=datetime.datetime(year,month,day,0,0,0)
+morningTS= morning.timestamp()*1000
+morningTS=int(morningTS)
+morning=str(morningTS)
 
 ## Argumenmts
 parser = argparse.ArgumentParser('description: generate some values every minute from values in influx, and also send data to wunderground.')
@@ -42,7 +53,7 @@ if DEBUG==True:
 config = configparser.ConfigParser(allow_no_value=True)
 config.read('/etc/cheapWeather.ini')
 ### Variables
-softwareVersion='&softwaretype=cheapWeather%20version%20swullock'
+softwareVersion='&softwaretype=cheapWeather%20version%20pikel'
 
 ## If we aren't using wunderground, we don't need to get the variables
 if useWunder==True:
@@ -60,6 +71,7 @@ thermometer=config.get('Query','thermometer')
 humidityStation=config.get('Query','humiditystation')
 windStation=config.get('Query','windstation')
 baroStation=config.get('Query','barostation')
+rainStation=config.get('Query','rainstation')
 useDracal=config.get('Baro','useDracal')
 dracalPath=config.get('Baro','dracalPath')
 dracalSwitches=config.get('Baro','dracalSwitches')
@@ -88,31 +100,50 @@ minWindChillWindPint=(3 * units.mile_per_hour)
 ## initialize influxDB V1
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
-def getQuery(field,measurement,varType):
-    output=client.query('select last(' + field + ') FROM ' + measurement + ' GROUP BY time(-1h)')
-    output=str(output)
+def fixInfluxOutput(input):
+    output=str(input)
     output=output.split(':')[5].split('}')[0]
     output=output.strip()
+    output=float(output)
+    return output
+
+def getQuery(field,measurement,varType):
+    output=client.query('select last(' + field + ') FROM ' + measurement + ' GROUP BY time(-1h)')
+    output=fixInfluxOutput(output)
     if varType == 'int':
        output=int(output)
-       if DEBUG == True:
-          print ('DEBUG: int specifically chosen for getQuery')
     elif varType == 'float':
        output = float(output)
-       if DEBUG == True:
-          print ('DEBUG: Float specifically chosen for getQuery')
     else:
        output=float(output)
-       if DEBUG == True:
-          print ('DEBUG: Float chosen by default for getQuery')
     return output
 
 def getPollutionQuery(field,measurement,location):
     output=client.query('select last(' + field + ') FROM "' + measurement + '" where  "locationId"::field = ' + location + ' GROUP BY time(-1h)')
-    output=str(output)
-    output=output.split(':')[5].split('}')[0]
-    output=output.strip()
+    output=fixInfluxOutput(output)
+    if DEBUG==True:
+       print ("DEBUG: Pollution query for" + field + "is" , output)
     return output
+
+def getRainDiffHourQuery(measurement):
+     max=client.query('SELECT max("rain_mm")  FROM ' + measurement +' WHERE time >= now()-1h and time <= now()' )
+     max=fixInfluxOutput(max)
+     min=client.query('SELECT min("rain_mm")  FROM ' + measurement +' WHERE time >= now()-1h  and time <= now()' )
+     min=fixInfluxOutput(min)
+     output=(max-min)
+     return output
+
+def getRainDiffDayQuery(measurement):
+     max=client.query('SELECT max("rain_mm")  FROM ' + measurement +' WHERE time >=  '+ morning +'ms and time <= now()' )
+     max=fixInfluxOutput(max)
+     min=client.query('SELECT min("rain_mm")  FROM ' + measurement +' WHERE time >=  '+ morning +'ms and time <= now()' )
+     min=fixInfluxOutput(min)
+     output=(max-min)
+     if DEBUG==True:
+        print ("DEBUG: Rain output for the day: ",output)
+     return output
+
+
 
 
 # Define influx queries to get information
@@ -124,6 +155,8 @@ windGustPint=(getQuery('wind_avg_km_h',windStation,float) * units.kilometer_per_
 PM1Pint=(getPollutionQuery(pm01,pollutionMeasurement,pollutionLocation) * units.micrograms)
 PM10Pint=(getPollutionQuery(pm10,pollutionMeasurement,pollutionLocation) * units.micrograms)
 PM02Pint=(getPollutionQuery(pm02,pollutionMeasurement,pollutionLocation) * units.micrograms)
+rainDiffHourPint=(getRainDiffDayQuery(rainStation) * units.millimeter)
+rainDiffDayPint=(getRainDiffDayQuery(rainStation) * units.millimeter)
 
 
 
@@ -141,9 +174,8 @@ if DEBUG==True:
    print("       humidity station= ", humidityStation)
    print("       wind station= ", windStation)
    print("       baro station= ", baroStation)
-##   print("       influxv2URL= ", influxv2Url)
-##   print("       influxv2Bucket= ",influxv2Bucket)
-##   print("       influxv2Org= ",influxv2Org)
+   print("       hourly rain= ",rainDiffHourPint)
+   print("       rain for today= ",rainDiffDayPint)
 
 if useWunder==True or useWunderground==1:
    WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
@@ -318,7 +350,20 @@ if DEBUG==True:
 
 if useWunder == True:
 # Build the wunderground URL
-           wundergroundRequest=(WUurl + WUcreds + "&dateutc=now&action=updateraw" + "&humidity=" + str(humidityPint.magnitude) + "&tempf=" + str(tempPint.to('degF').magnitude) + "&winddir=" + str(windDIRPint.magnitude) + "&windspeedmph=" + str(windPint.to('mile_per_hour').magnitude) + "&windgustmph=" + str(windGustPint.to('mile_per_hour').magnitude) + "&baromin=" + str(baroPint.magnitude) + "&dewptf=" + str(dewPointPint.to('degF').magnitude) + softwareVersion)
+           wundergroundRequest=(WUurl + WUcreds \
+           + "&dateutc=now&action=updateraw" +\
+           "&humidity="     + str(humidityPint.magnitude) +\
+           "&tempf="        + str(tempPint.to('degF').magnitude) +\
+           "&winddir="      + str(windDIRPint.magnitude) +\
+           "&windspeedmph= "+ str(windPint.to('mile_per_hour').magnitude) +\
+           "&windgustmph="  + str(windGustPint.to('mile_per_hour').magnitude) +\
+           "&baromin="      + str(baroPint.magnitude) +\
+           "&dewptf="       + str(dewPointPint.to('degF').magnitude) +\
+           "&rainin="       + str(rainDiffHourPint.to('inch').magnitude) +\
+           "&dailyrainin="  + str(rainDiffDayPint.to('inch').magnitude) +\
+           "&AqPM2.5="      + str(PM02Pint.magnitude) +\
+           "AqPM10="        +str(PM10Pint.magnitude) +\
+           softwareVersion)
 if useWunder==True and DEBUG==False:
    httpstatus=requests.get(wundergroundRequest)
    print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
