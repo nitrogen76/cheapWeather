@@ -43,6 +43,9 @@ parser.add_argument('-n','--no_wunderground',action='store_false',help='Do not u
 args=parser.parse_args()
 DEBUG=(args.debug)
 useWunder=(args.no_wunderground)
+
+## Set useWunder 
+## FIXME: use bools instead
 if useWunder==1:
    useWunder=True
 elif useWunder==0:
@@ -133,6 +136,8 @@ def getPollutionQuery(field,measurement,location):
     return output
 
 ## Function to get rain differences between a specific time and "now"
+## FIXME: These are currently set in variables up top
+## but should probably be more interactive for more use cases
 def getRainDiffQuery(measurement,delta):
     max=client.query('SELECT max("rain_mm")  FROM ' + measurement +' WHERE time >=  '+ delta +'ms and time <= now()' )
     max=fixInfluxOutput(max)
@@ -156,18 +161,17 @@ rainDiffHourPint=(getRainDiffQuery(rainStation,hourago) * units.millimeter)
 rainDiffDayPint=(getRainDiffQuery(rainStation,morning) * units.millimeter)
 lux=(getQuery('light_lux',windStation,int))
 uv=(getQuery('uvi',windStation,int))
-uv=round(uv)
 ## lux/685 is the conversion factor for green light
 #solarRadiation=(lux/685)
 ## lux/126.7 is for regular solar radiation
-## I will build this into the function eventually.
+## FIXME: Build this into the function eventually.
 ## i think most meterologists prefer the 126.7 number the more I read.
 ## I got the 126.7 factor from AmbientWeather's website:
 ## https://ambientweather.com/faqs/question/view/id/1452/
 solarRadiation=(lux/126.7)
 
 
-
+## In debug mode, show us what was configured
 if DEBUG==True:
    print("DEBUG: Configuration options passed from cheapWeather.ini")
    print("       useSensehat= ", useSensehat)
@@ -175,6 +179,9 @@ if DEBUG==True:
    print("       useDracal= ", useDracal)
    print("       dracalSwitches= ", dracalSwitches)
    print("       dracalPath= ", dracalPath)
+## if wundergrund was used, pick those variables up
+## FIXME: make it so blank variables are ignored and
+## will set these automatically
    if useWunder == True:
       print("       useWunderground= ", useWunderground)
       print("       wunderground user= ", wundergroundUser)
@@ -183,12 +190,15 @@ if DEBUG==True:
    print("       wind station= ", windStation)
    print("       baro station= ", baroStation)
 
+## Set this if we need to use it as above
 if useWunder==True or useWunderground==1:
    WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
    WUcreds = "ID=" + wundergroundUser + "&PASSWORD="+ wundergroundPass
 
 ## Get barometer info and write it to the database
 ## Sensehat probably doesnt work, but it's garbage, please dont use it
+## because i broke mine trying to test it.
+
 if useSensehat == "1":
     if DEBUG == True:
        print("useSensehat is triggered "+useSensehat)
@@ -230,6 +240,8 @@ if useDracal == "1":
     uncorrectedBaroPint=(dracalBaroFloat * units.inHg)
     if DEBUG==True:
        print(baroPint)
+## We have to create our own JSON.
+## How quaint!
     baroJSON = [{"measurement":"Dracal",
         "fields":
         {
@@ -297,6 +309,8 @@ if DEBUG==True:
    print('     UV Index: ',uv)
 
 ## Create JSON output for influx V1 because V2/flux sucks 
+## Again, the python modules are kinda iffy
+## hopefully the v3 stuff is nicer when it comes out
 dewpointJSON = [{"measurement":"Dewpoint",
 
     "fields":
@@ -371,7 +385,7 @@ if useWunder == True:
            "&dailyrainin="    + str(rainDiffDayPint.to('inch').magnitude) +\
            "&AqPM2.5="        + str(PM02Pint.magnitude) +\
            "&AqPM10="         + str(PM10Pint.magnitude) +\
-           "&UV="             + str(uv) +\
+           "&UV="             + str(round((uv))) +\
            "&solarradiation=" + str(solarRadiation) +\
            softwareVersion)
 
@@ -389,3 +403,9 @@ if DEBUG==True and useWunder==True:
 ## If we're not using wunderground, make it clear in debug mode.
 if useWunder==False and DEBUG==True:
    print ("DEBUG: Wunderground send disabled")
+
+
+## FIXME
+## When this gets more robust make it an application
+## that'll run by itself and do calculations more than
+## one minute apart
