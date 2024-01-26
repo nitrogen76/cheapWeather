@@ -227,6 +227,12 @@ else:
 if useDracal == "1":
     #run usbtenkiget to get the barometer reading with 19 decimals of precision
     result=subprocess.run([(dracalPath),(dracalSwitches), "-x6" ], capture_output=True)
+    if result.returncode !=0:
+        print ("Problem with",dracalPath,dracalPath," .  Do you have the executable?  is the device connected?")
+        sys.exit(1)
+    if result == None:
+        print (dracalPath," returned a null value.  Is the device connected?")
+        sys.exit(2)
     dracalBaro=(result.stdout).strip()
     dracalBaroFloat=float(dracalBaro)
     if DEBUG==True:
