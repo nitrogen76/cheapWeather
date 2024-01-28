@@ -183,4 +183,6 @@ CJG and MG for inspiring me with their RTL-SDR security demos, showing me how ea
 
 Hailey Bannister and CJG for helping me learn python.
 
+Station pressure to MSL conversion that includes temperature stolen directly from [this gist](https://gist.github.com/cubapp/23dd4e91814a995b8ff06f406679abcf) by [cubapp](https://github.com/cubapp)
+
 [Wunderground API](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
