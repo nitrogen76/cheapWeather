@@ -105,6 +105,10 @@ minWindChillWindPint=(3 * units.mile_per_hour)
 ## initialize influxDB V1
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
+def stationToMSL(hpa,tempC,altM):
+    output = hpa + ((hpa * 9.80665 * altM)/(287 * (273 + tempC + altM/400)))
+    return output
+
 ## Function to fix wonky influx module outputs
 def fixInfluxOutput(input):
     output=str(input)
@@ -241,8 +245,15 @@ if useDracal == "1":
     temp=subprocess.run([(dracalPath),(dracalSwitches), "-x6","-i1" ], capture_output=True)
     dracalTemp=(temp.stdout)
     dracalTempFloat=float(dracalTemp)
-    baroSL=dracalBaroFloat/pow(1-((Altitude)/44330.0),5.255)
-    baroPint=(baroSL * units.inHg)
+    stationPressurePint=(dracalBaroFloat * units.inHg)
+    stationTempPint    =(dracalTempFloat * units.degC)
+    baroSL=stationToMSL(stationPressurePint.to('hPa').magnitude,stationTempPint.magnitude,altitudePint.magnitude)
+#    baroSL=dracalBaroFloat/pow(1-((Altitude)/44330.0),5.255)
+    print ('old conversion: ',dracalBaroFloat/pow(1-((Altitude)/44330.0),5.255))
+    barohpaPint=(baroSL * units.hPa)
+    print (barohpaPint)
+    baroPint=barohpaPint.to('inHg')
+    print ('baropint: ',baroPint)
     uncorrectedBaroPint=(dracalBaroFloat * units.inHg)
     if DEBUG==True:
        print(baroPint)
