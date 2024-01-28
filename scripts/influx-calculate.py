@@ -296,7 +296,7 @@ if windPint.to('kilometer_per_hour').magnitude <= minWindChillWindPint.to('kilom
 if tempPint.magnitude >= minWindChillPint.to('degC').magnitude:
     windchillPint = tempPint
     if DEBUG==True:
-        print ("DEBUG: temp value, ",(tempPint).to('degC')," too high to generate a windchill", (minWindTempPint).to('degC'))
+        print ("DEBUG: temp value, ",(tempPint).to('degC')," too high to generate a windchill", (minWindChillPint).to('degC'))
 
 ## If windchill is higher than the temperature, thats a bug in
 ## Metpy, and we don't use the masking function.
