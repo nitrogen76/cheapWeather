@@ -219,70 +219,88 @@ def zambretti(currentBaro,diffBaro,wind):
               31:'Stormy, Possibly Improving',\
               32:'Stormy, Much Rain',}
 ## Trend requirement for dropping pressure
-    print (currentBaro,diffBaro,wind)
+    if DEBUG==True:
+       print (currentBaro,diffBaro,wind)
     if diffBaro.to('millibars').magnitude <= -1.6:
-       print ("trend for falling pressure met, going to next check")
-       print ("pressDiff: ",round(diffBaro.to('millibars'),2))
+       if DEBUG == True:
+          print ("trend for falling pressure met, going to next check")
+          print ("pressDiff: ",round(diffBaro.to('millibars'),2))
 ## pressure requirement for dropping trend
        if currentBaro.to('millibars').magnitude > 985 and currentBaro.to('millibars').magnitude  < 1050:
-          print ("Pressure requirement for falling trend met.  Use this.")
-          print ("pressNow: ",round(currentBaro.to('millibars'),2))
+           if DEBUG==True:
+              print ("Pressure requirement for falling trend met.  Use this.")
+              print ("pressNow: ",round(currentBaro.to('millibars'),2))
 ## Calculate Z
-          z = 127-0.12*currentBaro.to('millibars').magnitude
-          print ("Z for this step is: ",round(z,2))
+       z = 127-0.12*currentBaro.to('millibars').magnitude
+       if DEBUG==True:
+             print ("Z for this step is: ",round(z,2))
        else:
+          if DEBUG==True:
              print ("trend for falling pressure NOT met")
              print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
 
 ## Trend requirement for rising trend
     elif diffBaro.to('millibars').magnitude >= 1.6:
-         print ("Trend requirement for rising trend met.  Go to next check")
-         print ("pressDiff: ",round(diffBaro.to('millibars'),2))
+         if DEBUG==True:
+            print ("Trend requirement for rising trend met.  Go to next check")
+            print ("pressDiff: ",round(diffBaro.to('millibars'),2))
  ## Pressure requirement for rising trend
          if currentBaro.to('millibars').magnitude > 947 and currentBaro.to('millibars').magnitude < 1030:
-          print ("Pressure requirement for rising trend met.  use me.")
-          print ("pressNow: ",round(currentBaro.to('millibars'),2))
+          if DEBUG==True:
+             print ("Pressure requirement for rising trend met.  use me.")
+             print ("pressNow: ",round(currentBaro.to('millibars'),2))
 ## Calculate Z
           z = 185-0.16*currentBaro.to('millibars').magnitude
-          print ("Z for this step is: ",round(z,2))
+          if DEBUG==True:
+             print ("Z for this step is: ",round(z,2))
          else:
-              print ("Trend for rising not met")
-              print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
+              if DEBUG==True:
+                 print ("Trend for rising not met")
+                 print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
 
 ## Steady pressure
     elif  diffBaro.to('millibars').magnitude >= -1.6 and diffBaro.to('millibars').magnitude <= 1.6:
-          print ("Trend met for steady trend. going to next check.")
-          print ("pressDiff: ",round(diffBaro.to('millibars'),2))
+          if DEBUG==True:
+             print ("Trend met for steady trend. going to next check.")
+             print ("pressDiff: ",round(diffBaro.to('millibars'),2))
 ## Pressure requirement for steady trend
           if  currentBaro.to('millibars').magnitude >947 and currentBaro.to('millibars').magnitude < 1030:
-              print ("Pressure requirement for steady trend met. Use me.")
-              print ("pressNow: ",round(currentBaro.to('millibars'),2))
+              if DEBUG==True:
+                 print ("Pressure requirement for steady trend met. Use me.")
+                 print ("pressNow: ",round(currentBaro.to('millibars'),2))
 ## Calculate Z
               z = 144-0.13 *currentBaro.to('millibars').magnitude
-              print ("Z for this step is: ",round(z,2))
+              if DEBUG==True:
+                 print ("Z for this step is: ",round(z,2))
 
           else:
-              print ("Trend for steady not met")
+              if DEBUG==True:
+                 print ("Trend for steady not met")
 
     else:
-        print ("No requirements met, don't use anything")
-        print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
+        if DEBUG==True:
+           print ("No requirements met, don't use anything")
+           print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
 
 
     if (windDir >= 135) and (windDir <= 225):
-        print ("applying z+2 for wind direction of ", windDir)
+        if DEBUG==True:
+           print ("applying z+2 for wind direction of ", windDir)
         z=z+2
     elif (windDir >= 315) or (windDir <=45):
-        print ("applying no z manipulation for wind direction of ",windDir)
+        if DEBUG==True:
+           print ("applying no z manipulation for wind direction of ",windDir)
         z=z+0
     else:
-        print ("applying z+1 for wind direction of ",windDir)
+        if DEBUG==True:
+           print ("applying z+1 for wind direction of ",windDir)
         z=z+1
 
 
     z = round(z)
-    print ('Your value for Z(rounded!) is = ',z)
-    print ("Your forecast is: ",forecastDict[z])
+    if DEBUG==True:
+       print ('Your value for Z(rounded!) is = ',z)
+       print ("Your forecast is: ",forecastDict[z])
     return (z,forecastDict[z])
 
 
@@ -385,11 +403,8 @@ if useDracal == "1":
     stationTempPint    =(dracalTempFloat * units.degC)
     baroSL=stationToMSL(stationPressurePint.to('hPa').magnitude,stationTempPint.magnitude,altitudePint.magnitude)
 #    baroSL=dracalBaroFloat/pow(1-((Altitude)/44330.0),5.255)
-    print ('old conversion: ',dracalBaroFloat/pow(1-((Altitude)/44330.0),5.255))
     barohpaPint=(baroSL * units.hPa)
-    print (barohpaPint)
     baroPint=barohpaPint.to('inHg')
-    print ('baropint: ',baroPint)
     uncorrectedBaroPint=(dracalBaroFloat * units.inHg)
     if DEBUG==True:
        print(baroPint)
@@ -522,6 +537,8 @@ if DEBUG==True:
     print ("     Wet Bulb : ",WBTIndexJSON)
     print ("     Windchill : ",windchillJSON)
     print ("     Barometer : ",baroJSON)
+    print ("     Your zambretti code is: ",zambResponse[0])
+    print ("     Your zambretti forecast is ",zambResponse[1])
 
 ## IF we're using wunderground, lets build the
 ## url we're going to use to report
@@ -529,7 +546,6 @@ if DEBUG==True:
 ## FIXME: make this more elegant, and if we're not sending fields
 ## don't put them here
 
-print ("Your zambretti code is: ",zambResponse)
 
 if useWunder == True:
            wundergroundRequest=(WUurl + WUcreds +\
