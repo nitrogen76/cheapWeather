@@ -283,6 +283,7 @@ def zambretti(currentBaro,diffBaro,wind):
     z = round(z)
     print ('Your value for Z(rounded!) is = ',z)
     print ("Your forecast is: ",forecastDict[z])
+    return (z,forecastDict[z])
 
 
 
