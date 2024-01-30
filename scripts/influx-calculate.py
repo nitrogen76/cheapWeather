@@ -105,6 +105,8 @@ minWindChillWindPint=(3 * units.mile_per_hour)
 ## initialize influxDB V1
 client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), password=(influxPass), database=(influxDB))
 
+#### Begin function definitions
+
 def stationToMSL(hpa,tempC,altM):
     output = hpa + ((hpa * 9.80665 * altM)/(287 * (273 + tempC + altM/400)))
     return output
@@ -112,9 +114,14 @@ def stationToMSL(hpa,tempC,altM):
 ## Function to fix wonky influx module outputs
 def fixInfluxOutput(input):
     output=str(input)
-    output=output.split(':')[5].split('}')[0]
-    output=output.strip()
-    output=float(output)
+    if output == 'ResultSet({})':
+       output = None
+       if DEBUG == True:
+           print ("fixInfluxOutput didn't find any output, writing a null instead")
+    else:
+       output=output.split(':')[5].split('}')[0]
+       output=output.strip()
+       output=float(output)
     return output
 
 ## Function to make a generic query from influx for a generic value
@@ -128,6 +135,28 @@ def getQuery(field,measurement,varType):
     else:
        output=float(output)
     return output
+
+## get difference between 2 barometer readings
+def getBaroDiffQuery(measurement,field,start,delta):
+
+    if start == 0:
+       startDT=datetime.datetime.now()
+       startTS=int(startDT.timestamp()*1000)
+    else:
+       startDT=datetime.datetime.now() - datetime.timedelta(minutes=start)
+       startTS=int(startDT.timestamp()*1000)
+    end=start+delta
+    deltaDT=datetime.datetime.now() - datetime.timedelta(minutes=end)
+    deltaTS=int(deltaDT.timestamp()*1000)
+    deltaSTR=str(deltaTS)
+    startSTR=str(startTS)
+    first= client.query ('SELECT last("' + field +'")  FROM "' + measurement +'"')
+    last  = client.query ('SELECT first("' + field +'")  FROM "' + measurement +'" WHERE time >=  '+ deltaSTR +'ms and time <= ' + startSTR +'ms' )
+    first =fixInfluxOutput(first)
+    last  =fixInfluxOutput(last)
+    output=first-last
+    return float(output)
+
 
 ## Specific query to get pollution values from Airgradient API scraping 
 ## via Telegraf
@@ -147,10 +176,117 @@ def getRainDiffQuery(measurement,delta):
     max=fixInfluxOutput(max)
     min=client.query('SELECT min("rain_mm")  FROM ' + measurement +' WHERE time >=  '+ delta +'ms and time <= now()' )
     min=fixInfluxOutput(min)
-    output=(max-min)
+    if min == None or max == None:
+       output=0
+       if DEBUG == True:
+          print ("Rain difference plugin had nulls")
+    else:
+       output=(max-min)
     return output
 
 
+def zambretti(currentBaro,diffBaro,wind):
+    forecastDict={1:'Settled Fine',\
+              2:'Fine Weather',\
+              3:'Fine, Becoming Less Settled',\
+              4:'Fairly Fine, Showery Later',\
+              5:'Showery, Becoming More Unsettled',\
+              6:'Unsettled, Rain Later',\
+              7:'Rain at Times, Worse Later',\
+              8:'Rain at Times, Becoming Very Unsettled',\
+              9:'Very Unsettled, Rain',\
+              10:'Settled Fine',\
+              11:'Fine Weather',\
+              12:'Fine, Possibly Showers',\
+              13:'Fairly Fine, Showers Likely',\
+              14:'Showery, Bright Intervals',\
+              15:'Changeable, Some Rain',\
+              16:'Unsettled, Rain at Times',\
+              17:'Rain at Frequent Intervals',\
+              18:'Very Unsettled, Rain',\
+              19:'Stormy, Much Rain',\
+              20:'Settled Fine',\
+              21:'Fine Weather',\
+              22:'Becoming Fine',\
+              23:'Fairly Fine, Improving',\
+              24:'Fairly Fine, Possibly Showers Early',\
+              25:'Showery Early, Improving',\
+              26:'Changeable, Mending',\
+              27:'Rather Unsettled, Clearing Later',\
+              28:'Unsettled, Probably Improving',\
+              29:'Unsettled, Short Fine Intervals',\
+              30:'Very Unsettled, Finer at Times',\
+              31:'Stormy, Possibly Improving',\
+              32:'Stormy, Much Rain',}
+## Trend requirement for dropping pressure
+    print (currentBaro,diffBaro,wind)
+    if diffBaro.to('millibars').magnitude <= -1.6:
+       print ("trend for falling pressure met, going to next check")
+       print ("pressDiff: ",round(diffBaro.to('millibars'),2))
+## pressure requirement for dropping trend
+       if currentBaro.to('millibars').magnitude > 985 and currentBaro.to('millibars').magnitude  < 1050:
+          print ("Pressure requirement for falling trend met.  Use this.")
+          print ("pressNow: ",round(currentBaro.to('millibars'),2))
+## Calculate Z
+          z = 127-0.12*currentBaro.to('millibars').magnitude
+          print ("Z for this step is: ",round(z,2))
+       else:
+             print ("trend for falling pressure NOT met")
+             print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
+
+## Trend requirement for rising trend
+    elif diffBaro.to('millibars').magnitude >= 1.6:
+         print ("Trend requirement for rising trend met.  Go to next check")
+         print ("pressDiff: ",round(diffBaro.to('millibars'),2))
+ ## Pressure requirement for rising trend
+         if currentBaro.to('millibars').magnitude > 947 and currentBaro.to('millibars').magnitude < 1030:
+          print ("Pressure requirement for rising trend met.  use me.")
+          print ("pressNow: ",round(currentBaro.to('millibars'),2))
+## Calculate Z
+          z = 185-0.16*currentBaro.to('millibars').magnitude
+          print ("Z for this step is: ",round(z,2))
+         else:
+              print ("Trend for rising not met")
+              print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
+
+## Steady pressure
+    elif  diffBaro.to('millibars').magnitude >= -1.6 and diffBaro.to('millibars').magnitude <= 1.6:
+          print ("Trend met for steady trend. going to next check.")
+          print ("pressDiff: ",round(diffBaro.to('millibars'),2))
+## Pressure requirement for steady trend
+          if  currentBaro.to('millibars').magnitude >947 and currentBaro.to('millibars').magnitude < 1030:
+              print ("Pressure requirement for steady trend met. Use me.")
+              print ("pressNow: ",round(currentBaro.to('millibars'),2))
+## Calculate Z
+              z = 144-0.13 *currentBaro.to('millibars').magnitude
+              print ("Z for this step is: ",round(z,2))
+
+          else:
+              print ("Trend for steady not met")
+
+    else:
+        print ("No requirements met, don't use anything")
+        print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
+
+
+    if (windDir >= 135) and (windDir <= 225):
+        print ("applying z+2 for wind direction of ", windDir)
+        z=z+2
+    elif (windDir >= 315) or (windDir <=45):
+        print ("applying no z manipulation for wind direction of ",windDir)
+        z=z+0
+    else:
+        print ("applying z+1 for wind direction of ",windDir)
+        z=z+1
+
+
+    z = round(z)
+    print ('Your value for Z(rounded!) is = ',z)
+    print ("Your forecast is: ",forecastDict[z])
+
+
+
+### End function definitions
 
 # Define influx queries to get information
 tempPint=(getQuery('temperature_C',thermometer,float) * units.degC)
@@ -173,7 +309,6 @@ uv=(getQuery('uvi',windStation,int))
 ## I got the 126.7 factor from AmbientWeather's website:
 ## https://ambientweather.com/faqs/question/view/id/1452/
 solarRadiation=(lux/126.7)
-
 
 ## In debug mode, show us what was configured
 if DEBUG==True:
@@ -271,8 +406,13 @@ if useDracal == "1":
 
     client.write_points(baroJSON)
 
+## Zambretti stuff
 
-
+## Barometer difference queries for zambretti
+pressDiff      = getBaroDiffQuery('Dracal','Barometer',0,180)
+windDir        = windDIRPint.magnitude
+pressDiffPint  = (pressDiff * units.inHg)
+zambResponse = zambretti(baroPint,pressDiffPint,windDir)
 
 ## Use metpy to calculate some values
 dewPointPint=mpcalc.dewpoint_from_relative_humidity(tempPint, humidityPint)
@@ -387,6 +527,8 @@ if DEBUG==True:
 
 ## FIXME: make this more elegant, and if we're not sending fields
 ## don't put them here
+
+print ("Your zambretti code is: ",zambResponse)
 
 if useWunder == True:
            wundergroundRequest=(WUurl + WUcreds +\
