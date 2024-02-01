@@ -27,6 +27,7 @@ now = datetime.datetime.now()
 year= int(now.strftime('%Y'))
 month=int(now.strftime('%m'))
 day=  int(now.strftime('%d'))
+thisMin = int(now.strftime('%M'))
 hourago = (datetime.datetime.now() - datetime.timedelta(hours=1))
 morning=datetime.datetime(year,month,day,0,0,0)
 morningTS= morning.timestamp()*1000
@@ -40,9 +41,11 @@ hourago=str(houragoTS)
 parser = argparse.ArgumentParser('description: generate some values every minute from values in influx, and also send data to wunderground.')
 parser.add_argument('-d','--debug',action='store_true', help='Show debug information')
 parser.add_argument('-n','--no_wunderground',action='store_false',help='Do not use wunderground')
+parser.add_argument('-z','--zambretti',action='store_true',help='run a zambretti forecast and print it to stdout (will not write to database')
 args=parser.parse_args()
 DEBUG=(args.debug)
 useWunder=(args.no_wunderground)
+doZamb=(args.zambretti)
 
 ## Set useWunder 
 ## FIXME: use bools instead
@@ -425,10 +428,24 @@ if useDracal == "1":
 ## Zambretti stuff
 
 ## Barometer difference queries for zambretti
-pressDiff      = getBaroDiffQuery('Dracal','Barometer',0,180)
-windDir        = windDIRPint.magnitude
-pressDiffPint  = (pressDiff * units.inHg)
-zambResponse = zambretti(baroPint,pressDiffPint,windDir)
+if thisMin == 0 or thisMin == 30 or doZamb==True:
+   pressDiff      = getBaroDiffQuery('Dracal','Barometer',0,180)
+   windDir        = windDIRPint.magnitude
+   pressDiffPint  = (pressDiff * units.inHg)
+   zambResponse = zambretti(baroPint,pressDiffPint,windDir)
+   if doZamb==None or doZamb==False:
+        zambJSON = [{"measurement":"Zambretti",
+        "fields":
+        {
+        "zNumber":(zambResponse[0]),
+        "zForecast":(zambResponse[1]),
+        }
+        }
+        ]
+        client.write_points (zambJSON)
+   if doZamb==True or DEBUG==True:
+       print ('Your zambretti code is: ',zambResponse[0])
+       print ('Your zambretti forecast is: ',zambResponse[1])
 
 ## Use metpy to calculate some values
 dewPointPint=mpcalc.dewpoint_from_relative_humidity(tempPint, humidityPint)
@@ -537,8 +554,6 @@ if DEBUG==True:
     print ("     Wet Bulb : ",WBTIndexJSON)
     print ("     Windchill : ",windchillJSON)
     print ("     Barometer : ",baroJSON)
-    print ("     Your zambretti code is: ",zambResponse[0])
-    print ("     Your zambretti forecast is ",zambResponse[1])
 
 ## IF we're using wunderground, lets build the
 ## url we're going to use to report
@@ -567,7 +582,7 @@ if useWunder == True:
 
 ## Send the url we generated to the website if we're using wunderround and NOT
 ## in debug mode
-if useWunder==True and DEBUG==False:
+if useWunder==True and DEBUG==False and  doZamb!=True:
    httpstatus=requests.get(wundergroundRequest)
    print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
 
