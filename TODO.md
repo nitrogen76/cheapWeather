@@ -10,7 +10,7 @@
 * ~~Modify wunderground script to disable dewpoint calculation or wunderground uploads (or fix dewpoint queries)~~
   * You can set this in the commandline or in the cheapWeather.ini file 
 * ~~finally worked out some influx v2 setups for the scripts.  Need to make it prettier, but i got v2 running finally.  The FLUX query langage is INSANE so i'm still using v1 api mode for now on the graphs~~
-  ~~* Automatically calculating a forecast from historical values and deltas.~~
+* ~~Automatically calculating a forecast from historical values and deltas.~~
   * Zambretti forecasts implemented!  They are not tuned yet though.
 
 ~~* Implement [Airgradient](https://www.airgradient.com) monitoring
