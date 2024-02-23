@@ -33,13 +33,13 @@ influxv2Token=config.get('InfluxV2','token')
 
 ## Requests
 
-r=requests.get('http://varicella.ass.nurgle.net:3000/api/status')
-requestODU=requests.get('http://varicella.ass.nurgle.net:3000/api/status/odu')
-requestIDU=requests.get('http://varicella.ass.nurgle.net:3000/api/status/idu')
-requestOAT=requests.get('http://varicella.ass.nurgle.net:3000/api/status/oat')
-requestZone1=requests.get('http://varicella.ass.nurgle.net:3000/api/status/1')
-requestZone2=requests.get('http://varicella.ass.nurgle.net:3000/api/status/2')
-requestMessage=requests.get('http://varicella.ass.nurgle.net:3000/notifications.json')
+r=requests.get('http://hvac.dna.nurgle.net:3000/api/status')
+requestODU=requests.get('http://hvac.dna.nurgle.net:3000/api/status/odu')
+requestIDU=requests.get('http://hvac.dna.nurgle.net:3000/api/status/idu')
+requestOAT=requests.get('http://hvac.dna.nurgle.net:3000/api/status/oat')
+requestZone1=requests.get('http://hvac.dna.nurgle.net:3000/api/status/1')
+requestZone2=requests.get('http://hvac.dna.nurgle.net:3000/api/status/2')
+requestMessage=requests.get('http://hvac.dna.nurgle.net:3000/notifications.json')
 ## convert json into strings
 rawJsonData= str(r.text)
 rawJsonODU= str(requestODU.text)
