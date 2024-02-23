@@ -139,6 +139,22 @@ def getQuery(field,measurement,varType):
        output=float(output)
     return output
 
+## Function to get wind
+def getWindDirQuery(field,measurement,aggregatorType,varType):
+    output=client.query('select  last(' + field + ') FROM ' + measurement + ' GROUP BY time(-1h)')
+    output=fixInfluxOutput(output)
+    if varType == 'int':
+       output=int(output)
+    elif varType == 'float':
+       output = float(output)
+    else:
+       output=int(output)
+    if aggregatorType != 'median' and aggregatorType !='mean' and aggregatorType != 'mode':
+        raise SystemExit('invalid aggregatorType "'+aggregatorType+'" used in getWindDirQuery.')
+    return output
+
+
+
 ## get difference between 2 barometer readings
 def getBaroDiffQuery(measurement,field,start,delta):
 
@@ -307,6 +323,7 @@ def zambretti(currentBaro,diffBaro,wind):
     return (z,forecastDict[z])
 
 
+print (getWindDirQuery('wind_dir_deg',windStation,'mode','int'))
 
 ### End function definitions
 
@@ -314,7 +331,7 @@ def zambretti(currentBaro,diffBaro,wind):
 tempPint=(getQuery('temperature_C',thermometer,float) * units.degC)
 humidityPint=(getQuery('humidity',humidityStation,float) * units.percent)
 windPint=(getQuery('wind_avg_km_h',windStation,float) * units.kilometer_per_hour)
-windDIRPint=(getQuery('wind_dir_deg',windStation,int) * units.degrees)
+windDIRPint=(getWindDirQuery('wind_dir_deg',windStation,'mode','int') * units.degrees)
 windGustPint=(getQuery('wind_max_km_h',windStation,float) * units.kilometer_per_hour)
 PM1Pint=(getPollutionQuery(pm01,pollutionMeasurement,pollutionLocation) * units.micrograms)
 PM10Pint=(getPollutionQuery(pm10,pollutionMeasurement,pollutionLocation) * units.micrograms)
@@ -568,7 +585,7 @@ if useWunder == True:
            "&humidity="       + str(humidityPint.magnitude) +\
            "&tempf="          + str(tempPint.to('degF').magnitude) +\
            "&winddir="        + str(windDIRPint.magnitude) +\
-           "&windspeedmph= "  + str(windPint.to('mile_per_hour').magnitude) +\
+           "&windspeedmph="  + str(windPint.to('mile_per_hour').magnitude) +\
            "&windgustmph="    + str(windGustPint.to('mile_per_hour').magnitude) +\
            "&baromin="        + str(baroPint.magnitude) +\
            "&dewptf="         + str(dewPointPint.to('degF').magnitude) +\
