@@ -10,10 +10,14 @@
 * ~~Modify wunderground script to disable dewpoint calculation or wunderground uploads (or fix dewpoint queries)~~
   * You can set this in the commandline or in the cheapWeather.ini file 
 * ~~finally worked out some influx v2 setups for the scripts.  Need to make it prettier, but i got v2 running finally.  The FLUX query langage is INSANE so i'm still using v1 api mode for now on the graphs~~
+* ~~Automatically calculating a forecast from historical values and deltas.~~
+  * Zambretti forecasts implemented!  They are not tuned yet though.
+
 ~~* Implement [Airgradient](https://www.airgradient.com) monitoring
   * This can easily be done with telegraf, but want to test some local solutions that do not require their service~~
   * Currently, you will need to set up telegraf to pull information from AirGradient's API for this.  I will have some example configs added to show this, but setting up telegraf is a bit beyond the scope of this document.  Hopefully all you really need to do is plug these configs into telegraf.d directory.
-~
+  * You can now use a DFRobot ozone sensor on a rpi to collect ozone data.  ~~Will implement this with an arduino ESP32 soon~~
+  * [Audiophilette](https://github.com/audiophilette) [wrote](https://github.com/audiophilette/esp32_ozone)  an arduino thing to make using the DFRobot sensor very easy with an ESP32 module.  With minimal configuration you can export ozone readings to influxDB.
 
 * Better way to calculate dewpoints than doing in code every minute
 * Better quality scripts than the initial stabs.  Scripts need error checking, and debug
@@ -23,4 +27,3 @@
 * Clean up the code so it's ~~not~~ less embarrassing garbage.
 * See about an easy way to switch between Freedom Units and SI units.  All backend values are in SI units, to make computation easier, but it's a bit of a hack right now to get all the output in Freedom Units.  IT should be easily switchable instead of modifying each query.  
    * Using the [pint](https://pypi.org/project/Pint/)module that [metpy](https://pypi.org/project/MetPy/) uses to keep track of MOST units.  LUX to watts per meter amd UV Index are notibly absent.
-* Automatically calculating a forecast from historical values and deltas.

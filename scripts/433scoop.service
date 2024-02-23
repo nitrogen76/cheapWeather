@@ -1,0 +1,16 @@
+[Unit]
+Description="433scoop service"
+
+[Service]
+Type=simple
+ExecStart=rtl_433 -d:00000433 -M time:unix:usec:utc -R 142 -R 40 -R 73 -R 113 -R 42 -M ID -M protocol -M level -C si -F "influx://${Your influx host}:8086/write?db=${your influx dbname}&p=${your influx password}TC&u=${your influx user}"
+Restart=on-failure
+PIDFile=/tmp/433scoop.service.pid
+User=nobody
+WorkingDirectory=/tmp
+
+[Install]
+WantedBy=network-online.target
+
+## sudo usermod -a -G rtlsdr nobody
+
