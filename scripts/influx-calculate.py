@@ -17,6 +17,7 @@ import time
 import subprocess
 import sys
 import metpy.calc as mpcalc
+from openweather_pws import Measurements
 from metpy.units import units
 #import influxdb_client
 #from influxdb_client.client.write_api import SYNCHRONOUS
@@ -46,6 +47,8 @@ args=parser.parse_args()
 DEBUG=(args.debug)
 useWunder=(args.no_wunderground)
 doZamb=(args.zambretti)
+## FIXME: make an arg for this
+usePWS=1
 
 ## Set useWunder 
 ## FIXME: use bools instead
@@ -55,6 +58,9 @@ elif useWunder==0:
      useWunder=False
 else:
    useWunder=True
+
+## FIXME: Make this a switch
+usePWS=True
 
 if DEBUG==True:
     print ("DEBUG: ENABLED")
@@ -73,6 +79,10 @@ if useWunder==True:
     wundergroundPass=config.get('Wunderground','password')
 if useWunder==False and DEBUG==True:
     print ("DEBUG: Wunderground disabled, variables not read")
+
+if usePWS==True:
+    PWSUser=config.get('PWSWeather','user')
+    PWSPass=config.get('PWSWeather','password')
 ## influx
 influxUser=config.get('Influx','user')
 influxPass=config.get('Influx','password')
@@ -92,6 +102,8 @@ useSensehat=config.get('Baro','useSenseHat')
 Altitude=config.get('Baro','myAltitude')
 Altitude=float(Altitude)
 useWunderground=config.get('Wunderground','useWunderground')
+## FIXME DO this right
+##usePWS=config.get('PWSWeather','usePWS')
 pollutionMeasurement=config.get('Pollution','pollutionMeasurement')
 pollutionLocation=config.get('Pollution','locationID')
 pm01=config.get('Pollution','pm01')
@@ -373,6 +385,10 @@ if useWunder==True or useWunderground==1:
    WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
    WUcreds = "ID=" + wundergroundUser + "&PASSWORD="+ wundergroundPass
 
+if usePWS==True or usePWS==1:
+    PWSurl   = 'https://www.pwsweather.com/pwsupdate/pwsupdate.php?'
+    PWSCreds = "ID=" + PWSUser + "&PASSWORD="+ PWSPass
+
 ## Get barometer info and write it to the database
 ## Sensehat probably doesnt work, but it's garbage, please dont use it
 ## because i broke mine trying to test it.
@@ -597,11 +613,34 @@ if useWunder == True:
            "&solarradiation=" + str(solarRadiation) +\
            softwareVersion)
 
+if usePWS == True or  usePWS ==1:
+               PWSRequest=(PWSurl + PWSCreds +\
+           "&dateutc=now&action=updateraw" +\
+           "&humidity="       + str(humidityPint.magnitude) +\
+           "&tempf="          + str(tempPint.to('degF').magnitude) +\
+           "&winddir="        + str(windDIRPint.magnitude) +\
+           "&windspeedmph="  + str(windPint.to('mile_per_hour').magnitude) +\
+           "&windgustmph="    + str(windGustPint.to('mile_per_hour').magnitude) +\
+           "&baromin="        + str(baroPint.magnitude) +\
+           "&dewptf="         + str(dewPointPint.to('degF').magnitude) +\
+           "&rainin="         + str(rainDiffHourPint.to('inch').magnitude) +\
+           "&dailyrainin="    + str(rainDiffDayPint.to('inch').magnitude) +\
+           "&AqPM2.5="        + str(PM02Pint.magnitude) +\
+           "&AqPM10="         + str(PM10Pint.magnitude) +\
+           "&UV="             + str(round((uv))) +\
+           "&solarradiation=" + str(solarRadiation) +\
+           softwareVersion)
+
+
 ## Send the url we generated to the website if we're using wunderround and NOT
 ## in debug mode
 if useWunder==True and DEBUG==False and  doZamb!=True:
    httpstatus=requests.get(wundergroundRequest)
-   print(("Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
+   print(("Wunderrground Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
+
+if usePWS==True and DEBUG==False and doZamb!=True:
+    httpstatus=requests.get(PWSRequest)
+    print(("PWS Received " + str(httpstatus.status_code) + " " + str(httpstatus.text)))
 
 ## If we're in DEBUG mode, show the URL we generated and would have sent.
 if DEBUG==True and useWunder==True:
