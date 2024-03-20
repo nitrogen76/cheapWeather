@@ -46,7 +46,7 @@ gps=[[gps locations for weather warnings]] ## Not implemented yet!
 [APRS]
 callsign=[[Amateur radio callsign or CWOP userid
 ssid=[[any ssid you want to use, not required]]
-password=
+password=[[your aprs igate password, or cwop password
 port=14580
 host=noam.aprs2.net
 lat=[[in format DegMin.DECIMAL]]
