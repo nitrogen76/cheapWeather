@@ -4,6 +4,3 @@
 [submodule "rtl_433"]
 	path = rtl_433
 	url = https://github.com/merbanan/rtl_433
-[submodule "pywws"]
-	path = pywws
-	url = https://github.com/jim-easterbrook/pywws/
