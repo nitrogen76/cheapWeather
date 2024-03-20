@@ -1,6 +1,5 @@
 [Baro]
-useSensehat=0
-myAltitude=167
+myAltitude=149
 # In meters
 ## For Dracal Precision instruments
 useDracal=1
@@ -9,21 +8,47 @@ dracalSwitches=-PinHG
 
 [Influx]
 
+
 user=[[Your influxdb user here]]
 password=[[Your influx password here]]
 database=[[your influx DB name]]
 host=[[your influx host]]
 port=8086
 
+
+[InfluxV2]
+bucket=[[Your Bucket]]
+org=[[Your ORG]]
+token=[[Your token
+url=http://your.influx.server:portnum
+
 [Wunderground]
 useWunderground=1
-## set to zero if you don't want to send to wunderground
-user=[[your wunderground user]]
-password=[[your wunderground password]]
+user=[[wunderground userid]]
+password=[[wunderground password]]
+
+[PWSWeather]
+usePWS=1
+user=[[PWS weather user]]
+password=[[ia password here]]
 
 [Query]
-## Replace with the influxDB measurements you want to use for each
+## Replace these with the measurement name of what you want to use
 thermometer="Acurite-6045M"
 humiditystation="Acurite-6045M"
-windstation="EcoWitt-WS68"
+windstation="Fineoffset-WS90"
 barostation="Dracal"
+rainstation="EcoWitt-WH40"
+
+[WeatherWarnings]
+gps=[[gps locations for weather warnings]] ## Not implemented yet!
+
+[APRS]
+callsign=[[Amateur radio callsign or CWOP userid
+ssid=[[any ssid you want to use, not required]]
+password=
+port=14580
+host=noam.aprs2.net
+lat=[[in format DegMin.DECIMAL]]
+long=[[in format DegMIN.DECIMAL]]
+#status=Set this if you want a custom statu
