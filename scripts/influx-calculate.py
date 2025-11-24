@@ -215,124 +215,145 @@ def getRainDiffQuery(measurement,delta):
        output=(max-min)
     return output
 
+def zambretti(currentBaro, diffBaro, windDir):
+    """
+    currentBaro : pint.Quantity (e.g. inHg or hPa) - mean sea level pressure
+    diffBaro    : pint.Quantity (pressure change over ~3h)
+    windDir     : float degrees (0–360)
+    """
 
-def zambretti(currentBaro,diffBaro,wind):
-    forecastDict={1:'Settled Fine',\
-              2:'Fine Weather',\
-              3:'Fine, Becoming Less Settled',\
-              4:'Fairly Fine, Showery Later',\
-              5:'Showery, Becoming More Unsettled',\
-              6:'Unsettled, Rain Later',\
-              7:'Rain at Times, Worse Later',\
-              8:'Rain at Times, Becoming Very Unsettled',\
-              9:'Very Unsettled, Rain',\
-              10:'Settled Fine',\
-              11:'Fine Weather',\
-              12:'Fine, Possibly Showers',\
-              13:'Fairly Fine, Showers Likely',\
-              14:'Showery, Bright Intervals',\
-              15:'Changeable, Some Rain',\
-              16:'Unsettled, Rain at Times',\
-              17:'Rain at Frequent Intervals',\
-              18:'Very Unsettled, Rain',\
-              19:'Stormy, Much Rain',\
-              20:'Settled Fine',\
-              21:'Fine Weather',\
-              22:'Becoming Fine',\
-              23:'Fairly Fine, Improving',\
-              24:'Fairly Fine, Possibly Showers Early',\
-              25:'Showery Early, Improving',\
-              26:'Changeable, Mending',\
-              27:'Rather Unsettled, Clearing Later',\
-              28:'Unsettled, Probably Improving',\
-              29:'Unsettled, Short Fine Intervals',\
-              30:'Very Unsettled, Finer at Times',\
-              31:'Stormy, Possibly Improving',\
-              32:'Stormy, Much Rain',}
-## Trend requirement for dropping pressure
-    if DEBUG==True:
-       print (currentBaro,diffBaro,wind)
-    if diffBaro.to('millibars').magnitude <= -1.6:
-       if DEBUG == True:
-          print ("trend for falling pressure met, going to next check")
-          print ("pressDiff: ",round(diffBaro.to('millibars'),2))
-## pressure requirement for dropping trend
-       if currentBaro.to('millibars').magnitude > 985 and currentBaro.to('millibars').magnitude  < 1050:
-           if DEBUG==True:
-              print ("Pressure requirement for falling trend met.  Use this.")
-              print ("pressNow: ",round(currentBaro.to('millibars'),2))
-## Calculate Z
-       z = 127-0.12*currentBaro.to('millibars').magnitude
-       if DEBUG==True:
-             print ("Z for this step is: ",round(z,2))
-       else:
-          if DEBUG==True:
-             print ("trend for falling pressure NOT met")
-             print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
+    # Zambretti text table (unchanged)
+    forecastDict = {
+        1:  'Settled Fine',
+        2:  'Fine Weather',
+        3:  'Fine, Becoming Less Settled',
+        4:  'Fairly Fine, Showery Later',
+        5:  'Showery, Becoming More Unsettled',
+        6:  'Unsettled, Rain Later',
+        7:  'Rain at Times, Worse Later',
+        8:  'Rain at Times, Becoming Very Unsettled',
+        9:  'Very Unsettled, Rain',
+        10: 'Settled Fine',
+        11: 'Fine Weather',
+        12: 'Fine, Possibly Showers',
+        13: 'Fairly Fine, Showers Likely',
+        14: 'Showery, Bright Intervals',
+        15: 'Changeable, Some Rain',
+        16: 'Unsettled, Rain at Times',
+        17: 'Rain at Frequent Intervals',
+        18: 'Very Unsettled, Rain',
+        19: 'Stormy, Much Rain',
+        20: 'Settled Fine',
+        21: 'Fine Weather',
+        22: 'Becoming Fine',
+        23: 'Fairly Fine, Improving',
+        24: 'Fairly Fine, Possibly Showers Early',
+        25: 'Showery Early, Improving',
+        26: 'Changeable, Mending',
+        27: 'Rather Unsettled, Clearing Later',
+        28: 'Unsettled, Probably Improving',
+        29: 'Unsettled, Short Fine Intervals',
+        30: 'Very Unsettled, Finer at Times',
+        31: 'Stormy, Possibly Improving',
+        32: 'Stormy, Much Rain',
+    }
 
-## Trend requirement for rising trend
-    elif diffBaro.to('millibars').magnitude >= 1.6:
-         if DEBUG==True:
-            print ("Trend requirement for rising trend met.  Go to next check")
-            print ("pressDiff: ",round(diffBaro.to('millibars'),2))
- ## Pressure requirement for rising trend
-         if currentBaro.to('millibars').magnitude > 947 and currentBaro.to('millibars').magnitude < 1030:
-          if DEBUG==True:
-             print ("Pressure requirement for rising trend met.  use me.")
-             print ("pressNow: ",round(currentBaro.to('millibars'),2))
-## Calculate Z
-          z = 185-0.16*currentBaro.to('millibars').magnitude
-          if DEBUG==True:
-             print ("Z for this step is: ",round(z,2))
-         else:
-              if DEBUG==True:
-                 print ("Trend for rising not met")
-                 print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
+    # Helper: convert whatever you pass (inHg / hPa) into hPa
+    def _to_hpa(q):
+        try:
+            return q.to('hPa').magnitude
+        except Exception:
+            # Assume raw inHg if it's just a float
+            return (q * units.inHg).to('hPa').magnitude
 
-## Steady pressure
-    elif  diffBaro.to('millibars').magnitude >= -1.6 and diffBaro.to('millibars').magnitude <= 1.6:
-          if DEBUG==True:
-             print ("Trend met for steady trend. going to next check.")
-             print ("pressDiff: ",round(diffBaro.to('millibars'),2))
-## Pressure requirement for steady trend
-          if  currentBaro.to('millibars').magnitude >947 and currentBaro.to('millibars').magnitude < 1030:
-              if DEBUG==True:
-                 print ("Pressure requirement for steady trend met. Use me.")
-                 print ("pressNow: ",round(currentBaro.to('millibars'),2))
-## Calculate Z
-              z = 144-0.13 *currentBaro.to('millibars').magnitude
-              if DEBUG==True:
-                 print ("Z for this step is: ",round(z,2))
+    press_hpa = _to_hpa(currentBaro)
+    trend_hpa = _to_hpa(diffBaro)
 
-          else:
-              if DEBUG==True:
-                 print ("Trend for steady not met")
+    if DEBUG:
+        print("ZAMBRETTI INPUT:")
+        print("  press_hpa:", round(press_hpa, 1))
+        print("  trend_hpa:", round(trend_hpa, 2))
+        print("  windDir:", windDir)
 
+    # Trend classification (classic ±1.6 hPa over ~3h)
+    RISING_THRESH = 1.6
+    FALLING_THRESH = -1.6
+
+    if trend_hpa >= RISING_THRESH:
+        tendency = "rising"
+    elif trend_hpa <= FALLING_THRESH:
+        tendency = "falling"
     else:
-        if DEBUG==True:
-           print ("No requirements met, don't use anything")
-           print ("pressNow: ",round(currentBaro.to('millibars'),2),"and pressDiff: ",round(diffBaro.to('millibars'),2))
+        tendency = "steady"
 
+    if DEBUG:
+        print("  tendency:", tendency)
 
-    if (windDir >= 135) and (windDir <= 225):
-        if DEBUG==True:
-           print ("applying z+2 for wind direction of ", windDir)
-        z=z+2
-    elif (windDir >= 315) or (windDir <=45):
-        if DEBUG==True:
-           print ("applying no z manipulation for wind direction of ",windDir)
-        z=z+0
+    # Base Z from pressure & tendency (your original coefficients)
+    if tendency == "rising":
+        # valid range check is mostly informational; we still compute Z
+        if 947 <= press_hpa <= 1030 and DEBUG:
+            print("  pressure in rising range")
+        z = 185 - 0.16 * press_hpa
+
+    elif tendency == "falling":
+        if 985 <= press_hpa <= 1050 and DEBUG:
+            print("  pressure in falling range")
+        z = 127 - 0.12 * press_hpa
+
+    else:  # steady
+        if 947 <= press_hpa <= 1030 and DEBUG:
+            print("  pressure in steady range")
+        z = 144 - 0.13 * press_hpa
+
+    # Optional seasonal tweak (Northern Hemisphere)
+    # Summer-ish months: April–September -> slightly better weather
+    # Winter-ish: October–March -> slightly worse
+    try:
+        m = month  # uses your global 'month'
+    except NameError:
+        m = datetime.datetime.now().month
+
+    if 4 <= m <= 9:
+        z -= 1
+        if DEBUG:
+            print("  seasonal adj: summer (z-1)")
     else:
-        if DEBUG==True:
-           print ("applying z+1 for wind direction of ",windDir)
-        z=z+1
+        z += 1
+        if DEBUG:
+            print("  seasonal adj: winter (z+1)")
 
+    # Wind direction adjustment (using the *argument*, not a global)
+    if windDir is not None:
+        wd = float(windDir) % 360.0
+        if 135 <= wd <= 225:
+            # S–SW–W -> worse
+            z += 2
+            if DEBUG:
+                print("  wind adj: S-SW-W (z+2)")
+        elif wd >= 315 or wd <= 45:
+            # N–NE–E -> best (no penalty)
+            if DEBUG:
+                print("  wind adj: N-NE-E (z+0)")
+        else:
+            # all other directions -> mild penalty
+            z += 1
+            if DEBUG:
+                print("  wind adj: intermediate (z+1)")
 
-    z = round(z)
-    if DEBUG==True:
-       print ('Your value for Z(rounded!) is = ',z)
-       print ("Your forecast is: ",forecastDict[z])
-    return (z,forecastDict[z])
+    # Final Z: round & clamp to 1–32
+    z = int(round(z))
+    if z < 1:
+        z = 1
+    if z > 32:
+        z = 32
+
+    if DEBUG:
+        print("  Z (clamped):", z)
+        print("  Forecast:", forecastDict[z])
+
+    return z, forecastDict[z]
+
 
 
 print (getWindDirQuery('wind_dir_deg',windStation,'mode','int'))
