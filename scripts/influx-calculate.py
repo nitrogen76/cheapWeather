@@ -355,7 +355,6 @@ def zambretti(currentBaro, diffBaro, windDir):
     return z, forecastDict[z]
 
 
-
 print (getWindDirQuery('wind_dir_deg',windStation,'mode','int'))
 
 ### End function definitions
