@@ -122,6 +122,12 @@ client = InfluxDBClient(host=(influxHost), port=8086, username=(influxUser), pas
 
 #### Begin function definitions
 
+def scalar(q):
+    m = q.magnitude
+    if hasattr(m, "ndim") and m.ndim > 0:
+        return float(m.item())
+    return float(m)
+
 def stationToMSL(hpa,tempC,altM):
     output = hpa + ((hpa * 9.80665 * altM)/(287 * (273 + tempC + altM/400)))
     return output
@@ -558,7 +564,7 @@ dewpointJSON = [{"measurement":"Dewpoint",
 
     "fields":
     {
-    "dewpoint":(dewPointPint.magnitude)
+    "dewpoint": scalar(dewPointPint)
     }
     },
     ]
@@ -567,7 +573,7 @@ heatIndexJSON = [{"measurement":"Heatindex",
 
     "fields":
     {
-    "heatindex":(heatindexPint.magnitude)
+    "heatindex": scalar(heatindexPint)
     }
     },
     ]
@@ -576,7 +582,7 @@ WBTIndexJSON = [{"measurement":"Wet Bulb Temp",
 
     "fields":
     {
-    "Wet Bulb Temp":(wetBulbPint.magnitude)
+    "Wet Bulb Temp": scalar(wetBulbPint)
     }
     },
     ]
@@ -585,7 +591,7 @@ windchillJSON = [{"measurement":"Windchill",
 
     "fields":
     {
-    "Windchill":(windchillPint.magnitude)
+    "Windchill": scalar(windchillPint)
     }
     },
     ]
